@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英語トレカコレクション</title>
+    <!-- カメラと紙吹雪の外部ライブラリを読み込み -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 { color: #333; margin-bottom: 5px; }
+        .counter { font-size: 16px; color: #666; margin-bottom: 20px; font-weight: bold; }
+        
+        /* スキャンボタン */
+        .scan-btn {
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background 0.2s;
+        }
+        .scan-btn:hover { background: #218838; }
+
+        /* カメラ画面のポップアップ */
+        #camera-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 10;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        #reader { width: 300px; background: white; border-radius: 8px; overflow: hidden; }
+        .close-btn { margin-top: 15px; padding: 8px 16px; background: white; border: none; border-radius: 4px; cursor: pointer; }
+
+        /* コレクション全体のグリッド */
+        .collection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 15px;
+            width: 100%;
+            max-width: 700px;
+            margin-top: 20px;
+        }
+        .card-container {
+            background: white;
+            border-radius: 12px;
+            padding: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        .card-img { width: 100%; height: auto; border-radius: 8px; display: block; }
+        
+        /* 未解禁カード：シルエット（黒塗り） */
+        .locked .card-img { filter: brightness(0); }
+        .locked .card-info { visibility: hidden; }
+        .card-info { margin-top: 8px; font-size: 14px; font-weight: bold; color: #333; }
+
+        /* ゲットアニメーション画面 */
+        #get-animation-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 20;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+        }
+        .flip-card {
+            width: 220px;
+            height: 330px;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        .flip-card.do-flip { transform: rotateY(180deg); }
+        .card-face {
+            position: absolute;
+            width: 100%; height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            background: white; box-shadow: 0 10px 25px rgba(255,255,255,0.2);
+        }
+        /* カードの裏面 */
+        .card-back {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            font-size: 48px;
+            font-weight: bold;
+            border: 5px solid white;
+        }
+        /* カードの表面 */
+        .card-front {
+            transform: rotateY(180deg);
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .card-front img { width: 100%; height: auto; border-radius: 8px; }
+    </style>
+</head>
+<body>
+
+    <h1>英語トレカ図鑑</h1>
+    <!-- 集めた枚数のカウンター -->
+    <div class="counter" id="collectionCounter">0 / 40</div>
+    
+    <!-- QRコードスキャンボタン -->
+    <button class="scan-btn" onclick="openCamera()">QRコードをスキャン</button>
+
+    <!-- カメラ画面のポップアップ -->
+    <div id="camera-modal">
+        <div id="reader"></div>
+        <button class="close-btn" onclick="closeCamera()">閉じる</button>
+    </div>
+
+    <!-- カードゲットアニメーション画面 -->
+    <div id="get-animation-overlay" onclick="closeAnimation()">
+        <div class="flip-card" id="flipCard">
+            <div class="card-face card-back">？</div>
+            <div class="card-face card-front" id="animatedFront"></div>
+        </div>
+    </div>
+
+    <!-- 図鑑表示エリア -->
+    <div class="collection-grid" id="collectionGrid"></div>
+
+    <script>
+        // 設定：現在のカード総数
+        const TOTAL_CARDS = 40; 
+
+        // 1. カードデータを自動生成する（1.png ～ 40.png）
+        const cardsData = [];
+        for (let i = 1; i <= TOTAL_CARDS; i++) {
+            cardsData.push({
+                id: `card-${i}`,        // QRコードに読ませるID (例: card-1)
+                img: `${i}.png`,        // 画像ファイル名 (例: 1.png)
+                no: i                   // カード番号表示用
+            });
+        }
+
+        // 2. 解禁状態の管理（ブラウザのLocalStorageを使用）
+        let unlockedCards = JSON.parse(localStorage.getItem('unlockedCards')) || [];
+        let html5QrcodeScanner = null;
+
+        // 3. 図鑑とカウンターの描画機能
+        function renderCollection() {
+            // カウンターの更新
+            document.getElementById('collectionCounter').innerText = `${unlockedCards.length} / ${TOTAL_CARDS}`;
+
+            const grid = document.getElementById('collectionGrid');
+            grid.innerHTML = '';
+            
+            cardsData.forEach(card => {
+                const isUnlocked = unlockedCards.includes(card.id);
+                const cardEl = document.createElement('div');
+                cardEl.className = `card-container ${isUnlocked ? '' : 'locked'}`;
+                
+                cardEl.innerHTML = `
+                    <img src="${card.img}" alt="No.${card.no}" class="card-img">
+                    <div class="card-info">
+                        <div>No.${card.no}</div>
+                    </div>
+                `;
+                grid.appendChild(cardEl);
+            });
+        }
+
+        // 4. アプリ内カメラの起動
+        function openCamera() {
+            document.getElementById('camera-modal').style.display = 'flex';
+            html5QrcodeScanner = new Html5Qrcode("reader");
+            html5QrcodeScanner.start(
+                { facingMode: "environment" }, // スマホの背面カメラを優先
+                { fps: 10, qrbox: 250 },
+                onScanSuccess
+            ).catch(err => {
+                alert("カメラの起動に失敗しました。カメラの許可を確認してください。");
+                document.getElementById('camera-modal').style.display = 'none';
+            });
+        }
+
+        // 5. カメラを閉じる処理
+        function closeCamera() {
+            if (html5QrcodeScanner) {
+                html5QrcodeScanner.stop().then(() => {
+                    document.getElementById('camera-modal').style.display = 'none';
+                }).catch(() => {
+                    document.getElementById('camera-modal').style.display = 'none';
+                });
+            } else {
+                document.getElementById('camera-modal').style.display = 'none';
+            }
+        }
+
+        // 6. QRコード読み込み成功時の処理
+        function onScanSuccess(decodedText) {
+            closeCamera(); // まずカメラを閉じる
+            
+            // 読み取ったテキスト（例: card-1）に一致するカードを検索
+            const foundCard = cardsData.find(card => decodedText.trim() === card.id);
+            
+            if (foundCard) {
+                unlockCard(foundCard);
+            } else {
+                alert("これは有効なトレカのQRコードではありません。");
+            }
+        }
+
+        // 7. カード解禁＆アニメーション処理
+        function unlockCard(card) {
+            const isAlreadyUnlocked = unlockedCards.includes(card.id);
+            
+            // 重複ガード：すでに持っている場合は通知を出して終了
+            if (isAlreadyUnlocked) {
+                alert(`No.${card.no} はすでにコレクションに登録されています！`);
+                renderCollection();
+                return; 
+            }
+
+            // 新規獲得の保存
+            unlockedCards.push(card.id);
+            localStorage.setItem('unlockedCards', JSON.stringify(unlockedCards));
+
+            // アニメーション画面にカード画像をセット
+            const front = document.getElementById('animatedFront');
+            front.innerHTML = `
+                <img src="${card.img}">
+                <div style="margin-top:12px; font-weight:bold; text-align:center; font-size:18px; color:#333;">
+                    No.${card.no} ゲット！
+                </div>
+            `;
+
+            // アニメーション開始
+            const overlay = document.getElementById('get-animation-overlay');
+            const flipCard = document.getElementById('flipCard');
+            overlay.style.display = 'flex';
+            
+            setTimeout(() => {
+                flipCard.classList.add('do-flip');
+                // 紙吹雪エフェクト
+                confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
+            }, 300);
+        }
+
+        // 8. アニメーション画面を閉じる
+        function closeAnimation() {
+            document.getElementById('get-animation-overlay').style.display = 'none';
+            document.getElementById('flipCard').classList.remove('do-flip');
+            renderCollection(); // 図鑑を最新に更新
+        }
+
+        // アプリ起動時に図鑑を描画
+        renderCollection();
+    </script>
+</body>
+</html>
