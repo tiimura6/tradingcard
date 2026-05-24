@@ -65,13 +65,98 @@
             padding: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
         }
+        .card-container:active { transform: scale(0.95); }
+        
         .card-img { width: 100%; height: auto; border-radius: 8px; display: block; }
         
         /* 未解禁カード：シルエット（黒塗り） */
         .locked .card-img { filter: brightness(0); }
         .locked .card-info { visibility: hidden; }
         .card-info { margin-top: 8px; font-size: 14px; font-weight: bold; color: #333; }
+
+        /* カード拡大表示のオーバーレイ */
+        #zoom-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 30;
+            justify-content: center;
+            align-items: center;
+        }
+        .zoom-box {
+            background: white;
+            padding: 15px;
+            border-radius: 20px;
+            width: 85%;
+            max-width: 320px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            animation: zoomIn 0.25s ease-out;
+        }
+        .zoom-box img { width: 100%; height: auto; border-radius: 12px; }
+        .zoom-info { margin-top: 15px; font-size: 20px; font-weight: bold; color: #333; }
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* クイズ画面のポップアップ */
+        #quiz-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 15;
+            justify-content: center;
+            align-items: center;
+        }
+        .quiz-box {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            width: 85%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .quiz-meaning { font-size: 24px; font-weight: bold; color: #e44d26; margin: 15px 0; }
+        
+        .quiz-input {
+            width: 90%;
+            padding: 12px;
+            font-size: 18px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+            outline: none;
+        }
+        .quiz-input:focus { border-color: #007bff; }
+        
+        .submit-btn {
+            width: 96%;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .submit-btn:hover { background: #0056b3; }
+        .quiz-cancel-btn {
+            margin-top: 10px;
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            text-decoration: underline;
+        }
 
         /* ゲットアニメーション画面 */
         #get-animation-overlay {
@@ -84,44 +169,59 @@
             align-items: center;
             perspective: 1000px;
         }
+        
+        /* 【修正】縦に大きく伸ばし、480pxに変更して文字スペースをたっぷり確保 */
         .flip-card {
-            width: 220px;
-            height: 330px;
+            width: 260px;
+            height: 480px;
             transform-style: preserve-3d;
             transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
         }
         .flip-card.do-flip { transform: rotateY(180deg); }
+        
         .card-face {
             position: absolute;
             width: 100%; height: 100%;
             backface-visibility: hidden;
             border-radius: 15px;
             display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
-            background: white; box-shadow: 0 10px 25px rgba(255,255,255,0.2);
+            justify-content: flex-start; /* 上詰めに配置し下部の文字スペースを作る */
+            align-items: center;
+            background: white; 
+            box-shadow: 0 10px 25px rgba(255,255,255,0.2);
+            box-sizing: border-box; 
         }
-        /* カードの裏面 */
+        
+        /* 裏面は中央揃えで「？」を出す */
         .card-back {
             background: linear-gradient(135deg, #007bff, #0056b3);
             color: white;
             font-size: 48px;
             font-weight: bold;
             border: 5px solid white;
+            justify-content: center; 
         }
-        /* カードの表面 */
+        
+        /* 表面のレイアウト */
         .card-front {
             transform: rotateY(180deg);
-            padding: 10px;
-            box-sizing: border-box;
+            padding: 15px;
         }
-        .card-front img { width: 100%; height: auto; border-radius: 8px; }
+        
+        /* 【修正】画像が大きくなりすぎないよう、縦の上限を70%に制限 */
+        .card-front img { 
+            width: 100%; 
+            max-height: 70%; 
+            object-fit: contain; /* アスペクト比を維持して枠に収める */
+            border-radius: 8px; 
+            display: block; 
+        }
     </style>
 </head>
 <body>
 
     <h1>英語トレカ図鑑</h1>
-    <!-- 集めた枚数のカウンター -->
     <div class="counter" id="collectionCounter">0 / 40</div>
     
     <!-- QRコードスキャンボタン -->
@@ -133,6 +233,20 @@
         <button class="close-btn" onclick="closeCamera()">閉じる</button>
     </div>
 
+    <!-- 記述式英語クイズ画面 -->
+    <div id="quiz-overlay">
+        <div class="quiz-box">
+            <h3 style="margin:0; color:#666;">ミッション：英語で書きなさい</h3>
+            <div class="quiz-meaning" id="quizMeaning">こんにちは</div>
+            
+            <input type="text" id="answerInput" class="quiz-input" placeholder="英語を入力してね" autocomplete="off" autofocus>
+            
+            <button class="submit-btn" onclick="checkAnswer()">解答する</button>
+            <br>
+            <button class="quiz-cancel-btn" onclick="closeQuiz()">あきらめる</button>
+        </div>
+    </div>
+
     <!-- カードゲットアニメーション画面 -->
     <div id="get-animation-overlay" onclick="closeAnimation()">
         <div class="flip-card" id="flipCard">
@@ -141,32 +255,65 @@
         </div>
     </div>
 
+    <!-- カード拡大表示画面 -->
+    <div id="zoom-overlay" onclick="closeZoom()">
+        <div class="zoom-box" onclick="event.stopPropagation()">
+            <div id="zoomContent"></div>
+        </div>
+    </div>
+
     <!-- 図鑑表示エリア -->
     <div class="collection-grid" id="collectionGrid"></div>
 
     <script>
-        // 設定：現在のカード総数
         const TOTAL_CARDS = 40; 
 
-        // 1. カードデータを自動生成する（1.png ～ 40.png）
+        // 記述式用のクイズデータ
+        const quizList = {
+            1: { meaning: "二重線", answer: "a double line" },
+            2: { meaning: "まったく違う", answer: "a far cry from" },
+            3: { meaning: "職業、身分", answer: "a walk of life" },
+            4: { meaning: "放棄する、捨てる", answer: "abandon" },
+            5: { meaning: "異常、異変", answer: "abnormality" }
+            6: { meaning: "廃止する", answer: "abolish" },
+            7: { meaning: "絶対的な", answer: "absolute" },
+            8: { meaning: "吸収する", answer: "absorb" },
+            9: { meaning: "豊富な", answer: "abundant" },
+            10: { meaning: "利用できる", answer: "accessible" }
+            11: { meaning: "達成、業績", answer: "accomplishment" },
+            12: { meaning: "説明する", answer: "account for" },
+            13: { meaning: "達成する", answer: "achieve" },
+            14: { meaning: "功績、業績", answer: "achievement" },
+            15: { meaning: "酸", answer: "acid" }
+            16: { meaning: "習得する、獲得する", answer: "acquire" },
+            17: { meaning: "適応する", answer: "adapt" },
+            18: { meaning: "翻案、適応", answer: "adaptation" },
+        };
+
+        // 1. カードデータを自動生成
         const cardsData = [];
         for (let i = 1; i <= TOTAL_CARDS; i++) {
+            const quiz = quizList[i] || { 
+                meaning: `日本語の意味 ${i}`, 
+                answer: `English ${i}` 
+            };
+
             cardsData.push({
-                id: `card-${i}`,        // QRコードに読ませるID (例: card-1)
-                img: `${i}.png`,        // 画像ファイル名 (例: 1.png)
-                no: i                   // カード番号表示用
+                id: `card-${i}`,
+                img: `${i}.png`,
+                no: i,
+                quiz: quiz
             });
         }
 
-        // 2. 解禁状態の管理（ブラウザのLocalStorageを使用）
+        // 2. 解禁状態の管理
         let unlockedCards = JSON.parse(localStorage.getItem('unlockedCards')) || [];
         let html5QrcodeScanner = null;
+        let currentScanningCard = null;
 
-        // 3. 図鑑とカウンターの描画機能
+        // 3. 図鑑とカウンターの描画
         function renderCollection() {
-            // カウンターの更新
             document.getElementById('collectionCounter').innerText = `${unlockedCards.length} / ${TOTAL_CARDS}`;
-
             const grid = document.getElementById('collectionGrid');
             grid.innerHTML = '';
             
@@ -175,31 +322,53 @@
                 const cardEl = document.createElement('div');
                 cardEl.className = `card-container ${isUnlocked ? '' : 'locked'}`;
                 
+                cardEl.onclick = () => tapCard(card, isUnlocked);
+                
                 cardEl.innerHTML = `
                     <img src="${card.img}" alt="No.${card.no}" class="card-img">
                     <div class="card-info">
-                        <div>No.${card.no}</div>
+                        <div>${card.quiz.answer}</div>
+                        <div style="font-size:12px; color:#666; margin-top:4px;">No.${card.no}</div>
                     </div>
                 `;
                 grid.appendChild(cardEl);
             });
         }
 
-        // 4. アプリ内カメラの起動
+        // カードをタップしたときの拡大処理
+        function tapCard(card, isUnlocked) {
+            if (!isUnlocked) return;
+
+            const zoomContent = document.getElementById('zoomContent');
+            zoomContent.innerHTML = `
+                <img src="${card.img}" alt="No.${card.no}">
+                <div class="zoom-info">
+                    <div>${card.quiz.answer}</div>
+                    <div style="font-size:14px; color:#666; margin-top:6px;">No.${card.no}</div>
+                    <div style="font-size:16px; color:#28a745; margin-top:4px; font-weight:normal;">意味: ${card.quiz.meaning}</div>
+                </div>
+            `;
+            document.getElementById('zoom-overlay').style.display = 'flex';
+        }
+
+        function closeZoom() {
+            document.getElementById('zoom-overlay').style.display = 'none';
+        }
+
+        // アプリ内カメラの起動
         function openCamera() {
             document.getElementById('camera-modal').style.display = 'flex';
             html5QrcodeScanner = new Html5Qrcode("reader");
             html5QrcodeScanner.start(
-                { facingMode: "environment" }, // スマホの背面カメラを優先
+                { facingMode: "environment" },
                 { fps: 10, qrbox: 250 },
                 onScanSuccess
             ).catch(err => {
-                alert("カメラの起動に失敗しました。カメラの許可を確認してください。");
+                alert("カメラの起動に失敗しました。");
                 document.getElementById('camera-modal').style.display = 'none';
             });
         }
 
-        // 5. カメラを閉じる処理
         function closeCamera() {
             if (html5QrcodeScanner) {
                 html5QrcodeScanner.stop().then(() => {
@@ -212,64 +381,93 @@
             }
         }
 
-        // 6. QRコード読み込み成功時の処理
+        // QRコード読み込み成功時
         function onScanSuccess(decodedText) {
-            closeCamera(); // まずカメラを閉じる
-            
-            // 読み取ったテキスト（例: card-1）に一致するカードを検索
+            closeCamera();
             const foundCard = cardsData.find(card => decodedText.trim() === card.id);
             
             if (foundCard) {
-                unlockCard(foundCard);
+                if (unlockedCards.includes(foundCard.id)) {
+                    alert(`No.${foundCard.no} のカードはすでに持っています！`);
+                    return;
+                }
+                showQuiz(foundCard);
             } else {
                 alert("これは有効なトレカのQRコードではありません。");
             }
         }
 
-        // 7. カード解禁＆アニメーション処理
-        function unlockCard(card) {
-            const isAlreadyUnlocked = unlockedCards.includes(card.id);
+        // クイズを表示
+        function showQuiz(card) {
+            currentScanningCard = card;
+            document.getElementById('quizMeaning').innerText = card.quiz.meaning;
+            document.getElementById('answerInput').value = ''; 
+            document.getElementById('quiz-overlay').style.display = 'flex';
             
-            // 重複ガード：すでに持っている場合は通知を出して終了
-            if (isAlreadyUnlocked) {
-                alert(`No.${card.no} はすでにコレクションに登録されています！`);
-                renderCollection();
-                return; 
-            }
+            setTimeout(() => { document.getElementById('answerInput').focus(); }, 100);
+        }
 
-            // 新規獲得の保存
+        function closeQuiz() {
+            document.getElementById('quiz-overlay').style.display = 'none';
+            currentScanningCard = null;
+        }
+
+        // 記述式の正誤判定
+        function checkAnswer() {
+            const userInput = document.getElementById('answerInput').value;
+            const card = currentScanningCard;
+
+            const formatString = (str) => str.toLowerCase().trim().replace(/[!.,]/g, '');
+
+            if (formatString(userInput) === formatString(card.quiz.answer)) {
+                document.getElementById('quiz-overlay').style.display = 'none';
+                alert("正解！カードをゲットしたよ！");
+                unlockCard(card);
+            } else {
+                alert("ちがうよ！もう一度よく考えてみてね。");
+                document.getElementById('answerInput').value = '';
+                document.getElementById('answerInput').focus();
+            }
+        }
+
+        document.getElementById('answerInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') { checkAnswer(); }
+        });
+
+        // カード解禁＆アニメーション処理
+        function unlockCard(card) {
             unlockedCards.push(card.id);
             localStorage.setItem('unlockedCards', JSON.stringify(unlockedCards));
 
-            // アニメーション画面にカード画像をセット
             const front = document.getElementById('animatedFront');
+            // 【修正】十分な縦幅があるため、文字部分が画像の下にスッキリゆとりを持って配置されます
             front.innerHTML = `
                 <img src="${card.img}">
-                <div style="margin-top:12px; font-weight:bold; text-align:center; font-size:18px; color:#333;">
-                    No.${card.no} ゲット！
+                <div style="margin-top:20px; font-weight:bold; text-align:center; width:100%;">
+                    <div style="font-size:22px; color:#333;">${card.quiz.answer}</div>
+                    <div style="font-size:15px; color:#666; margin-top:8px;">No.${card.no} ゲット！</div>
                 </div>
             `;
 
-            // アニメーション開始
             const overlay = document.getElementById('get-animation-overlay');
             const flipCard = document.getElementById('flipCard');
             overlay.style.display = 'flex';
             
             setTimeout(() => {
                 flipCard.classList.add('do-flip');
-                // 紙吹雪エフェクト
                 confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
             }, 300);
         }
 
-        // 8. アニメーション画面を閉じる
+        // アニメーション画面を閉じる
         function closeAnimation() {
             document.getElementById('get-animation-overlay').style.display = 'none';
             document.getElementById('flipCard').classList.remove('do-flip');
-            renderCollection(); // 図鑑を最新に更新
+            currentScanningCard = null;
+            renderCollection(); 
         }
 
-        // アプリ起動時に図鑑を描画
+        // 初期描画
         renderCollection();
     </script>
 </body>
