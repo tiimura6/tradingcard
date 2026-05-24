@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>英語トレカコレクション（超軽量高速版）</title>
-    <!-- カメラと紙吹雪の外部ライブラリを読み込み -->
+    <title>英語トレカコレクション</title>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
@@ -59,10 +58,10 @@
         /* 解禁済みカードの画像スタイル */
         .card-img { width: 100%; height: auto; border-radius: 8px; display: block; }
         
-        /* 🆕 未解禁カード用の軽量ダミー枠（画像の代わりにCSSで表現して通信量をゼロに） */
+        /* 未解禁カード用の軽量ダミー枠 */
         .locked-placeholder {
             width: 100%;
-            aspect-ratio: 2 / 3; /* カードの一般的な縦横比をキープ */
+            aspect-ratio: 2 / 3;
             background: #cbd5e1;
             border-radius: 8px;
             display: flex;
@@ -74,8 +73,6 @@
         }
         
         .card-info { margin-top: 8px; font-size: 14px; font-weight: bold; color: #333; }
-        /* 未解禁時はテキストを非表示にする */
-        .locked .card-info { visibility: hidden; }
 
         /* カメラ画面のポップアップ */
         #camera-modal {
@@ -102,6 +99,7 @@
             align-items: center;
         }
         .zoom-box {
+            position: relative; /* 🆕 ✕ボタンを右上に絶対配置するための基準点 */
             background: white;
             padding: 15px;
             border-radius: 20px;
@@ -112,7 +110,30 @@
             animation: zoomIn 0.25s ease-out;
         }
         .zoom-box img { width: 100%; height: auto; border-radius: 12px; }
-        .zoom-info { margin-top: 15px; font-size: 20px; font-weight: bold; color: #333; }
+        .zoom-info { margin-top: 12px; font-size: 18px; font-weight: bold; color: #333; }
+        
+        /* 🆕 拡大画面用の解除（閉じる）ボタン */
+        .zoom-close-btn {
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            width: 36px;
+            height: 36px;
+            background: #ff4d4d;
+            color: white;
+            border: 2px solid white;
+            border-radius: 50%;
+            font-size: 18px;
+            font-weight: bold;
+            line-height: 32px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .zoom-close-btn:hover { background: #cc0000; }
+
         @keyframes zoomIn {
             from { transform: scale(0.8); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
@@ -234,16 +255,13 @@
     <h1>英語トレカ図鑑</h1>
     <div class="counter" id="collectionCounter">0 / 40</div>
     
-    <!-- QRコードスキャンボタン -->
     <button class="scan-btn" onclick="openCamera()">QRコードをスキャン</button>
 
-    <!-- カメラ画面のポップアップ -->
     <div id="camera-modal">
         <div id="reader"></div>
         <button class="close-btn" onclick="closeCamera()">閉じる</button>
     </div>
 
-    <!-- 記述式英語クイズ画面 -->
     <div id="quiz-overlay">
         <div class="quiz-box">
             <h3 style="margin:0; color:#666;">ミッション：英語で書きなさい</h3>
@@ -257,7 +275,6 @@
         </div>
     </div>
 
-    <!-- カードゲットアニメーション画面 -->
     <div id="get-animation-overlay" onclick="closeAnimation()">
         <div class="flip-card" id="flipCard">
             <div class="card-face card-back">？</div>
@@ -265,14 +282,13 @@
         </div>
     </div>
 
-    <!-- カード拡大表示画面 -->
     <div id="zoom-overlay" onclick="closeZoom()">
         <div class="zoom-box" onclick="event.stopPropagation()">
+            <button class="zoom-close-btn" onclick="closeZoom()">✕</button>
             <div id="zoomContent"></div>
         </div>
     </div>
 
-    <!-- 図鑑表示エリア -->
     <div class="collection-grid" id="collectionGrid"></div>
 
     <script>
@@ -321,8 +337,6 @@
                 
                 cardEl.onclick = () => tapCard(card, isUnlocked);
                 
-                // 🆕 【超重要】持っている時だけ <img> タグを生成し、本物画像をダウンロードさせる
-                // 持っていない時は画像タグ自体を作らず、CSSのグレー枠（？）にするので、無駄な通信がゼロになります
                 let cardVisualHTML = '';
                 if (isUnlocked) {
                     cardVisualHTML = `<img src="${card.img}" alt="No.${card.no}" class="card-img" loading="lazy">`;
@@ -330,11 +344,11 @@
                     cardVisualHTML = `<div class="locked-placeholder">？</div>`;
                 }
                 
+                // 🆕 【修正】カードの下にあった「英単語のテキスト」を削除し、No.XX のみにしました
                 cardEl.innerHTML = `
                     ${cardVisualHTML}
                     <div class="card-info">
-                        <div>${card.quiz.answer}</div>
-                        <div style="font-size:12px; color:#666; margin-top:4px;">No.${card.no}</div>
+                        <div>No.${card.no}</div>
                     </div>
                 `;
                 grid.appendChild(cardEl);
@@ -346,12 +360,11 @@
             if (!isUnlocked) return;
 
             const zoomContent = document.getElementById('zoomContent');
+            // 🆕 【修正】拡大画面のテキストからも英単語と意味を削除し、No.XX のみにしました
             zoomContent.innerHTML = `
                 <img src="${card.img}" alt="No.${card.no}">
                 <div class="zoom-info">
-                    <div>${card.quiz.answer}</div>
-                    <div style="font-size:14px; color:#666; margin-top:6px;">No.${card.no}</div>
-                    <div style="font-size:16px; color:#28a745; margin-top:4px; font-weight:normal;">意味: ${card.quiz.meaning}</div>
+                    <div>No.${card.no}</div>
                 </div>
             `;
             document.getElementById('zoom-overlay').style.display = 'flex';
@@ -446,11 +459,11 @@
             localStorage.setItem('unlockedCards', JSON.stringify(unlockedCards));
 
             const front = document.getElementById('animatedFront');
+            // 🆕 【修正】獲得時のアニメーション画面の文字も No.XX のみにスッキリさせました
             front.innerHTML = `
                 <img src="${card.img}" loading="lazy">
                 <div style="margin-top:20px; font-weight:bold; text-align:center; width:100%;">
-                    <div style="font-size:22px; color:#333;">${card.quiz.answer}</div>
-                    <div style="font-size:15px; color:#666; margin-top:8px;">No.${card.no} ゲット！</div>
+                    <div style="font-size:20px; color:#333;">No.${card.no} ゲット！</div>
                 </div>
             `;
 
@@ -464,7 +477,7 @@
             }, 300);
         }
 
-        // アミュニーション画面を閉じる
+        // アニメーション画面を閉じる
         function closeAnimation() {
             document.getElementById('get-animation-overlay').style.display = 'none';
             document.getElementById('flipCard').classList.remove('do-flip');
