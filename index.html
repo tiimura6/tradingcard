@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>英語トレカコレクション</title>
+    <title>英語トレカコレクション（超軽量高速版）</title>
     <!-- カメラと紙吹雪の外部ライブラリを読み込み -->
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -36,20 +36,6 @@
         }
         .scan-btn:hover { background: #218838; }
 
-        /* カメラ画面のポップアップ */
-        #camera-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
-            z-index: 10;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-        #reader { width: 300px; background: white; border-radius: 8px; overflow: hidden; }
-        .close-btn { margin-top: 15px; padding: 8px 16px; background: white; border: none; border-radius: 4px; cursor: pointer; }
-
         /* コレクション全体のグリッド */
         .collection-grid {
             display: grid;
@@ -70,12 +56,40 @@
         }
         .card-container:active { transform: scale(0.95); }
         
+        /* 解禁済みカードの画像スタイル */
         .card-img { width: 100%; height: auto; border-radius: 8px; display: block; }
         
-        /* 未解禁カード：シルエット（黒塗り） */
-        .locked .card-img { filter: brightness(0); }
-        .locked .card-info { visibility: hidden; }
+        /* 🆕 未解禁カード用の軽量ダミー枠（画像の代わりにCSSで表現して通信量をゼロに） */
+        .locked-placeholder {
+            width: 100%;
+            aspect-ratio: 2 / 3; /* カードの一般的な縦横比をキープ */
+            background: #cbd5e1;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #64748b;
+            font-size: 32px;
+            font-weight: bold;
+        }
+        
         .card-info { margin-top: 8px; font-size: 14px; font-weight: bold; color: #333; }
+        /* 未解禁時はテキストを非表示にする */
+        .locked .card-info { visibility: hidden; }
+
+        /* カメラ画面のポップアップ */
+        #camera-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 10;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        #reader { width: 300px; background: white; border-radius: 8px; overflow: hidden; }
+        .close-btn { margin-top: 15px; padding: 8px 16px; background: white; border: none; border-radius: 4px; cursor: pointer; }
 
         /* カード拡大表示のオーバーレイ */
         #zoom-overlay {
@@ -320,9 +334,17 @@
                 
                 cardEl.onclick = () => tapCard(card, isUnlocked);
                 
-                // 【改善案1】loading="lazy" を追加し、見えていない位置のカード画像を遅延読み込みさせます
+                // 🆕 【超重要】持っている時だけ <img> タグを生成し、本物画像をダウンロードさせる
+                // 持っていない時は画像タグ自体を作らず、CSSのグレー枠（？）にするので、無駄な通信がゼロになります
+                let cardVisualHTML = '';
+                if (isUnlocked) {
+                    cardVisualHTML = `<img src="${card.img}" alt="No.${card.no}" class="card-img" loading="lazy">`;
+                } else {
+                    cardVisualHTML = `<div class="locked-placeholder">？</div>`;
+                }
+                
                 cardEl.innerHTML = `
-                    <img src="${card.img}" alt="No.${card.no}" class="card-img" loading="lazy">
+                    ${cardVisualHTML}
                     <div class="card-info">
                         <div>${card.quiz.answer}</div>
                         <div style="font-size:12px; color:#666; margin-top:4px;">No.${card.no}</div>
@@ -437,7 +459,6 @@
             localStorage.setItem('unlockedCards', JSON.stringify(unlockedCards));
 
             const front = document.getElementById('animatedFront');
-            // 【改善案1】ここにも loading="lazy" を入れて無駄な先読みを防ぎます
             front.innerHTML = `
                 <img src="${card.img}" loading="lazy">
                 <div style="margin-top:20px; font-weight:bold; text-align:center; width:100%;">
@@ -456,7 +477,7 @@
             }, 300);
         }
 
-        // アニメーション画面を閉じる
+        // アミュニーション画面を閉じる
         function closeAnimation() {
             document.getElementById('get-animation-overlay').style.display = 'none';
             document.getElementById('flipCard').classList.remove('do-flip');
