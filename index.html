@@ -170,7 +170,6 @@
             perspective: 1000px;
         }
         
-        /* 【修正】縦に大きく伸ばし、480pxに変更して文字スペースをたっぷり確保 */
         .flip-card {
             width: 260px;
             height: 480px;
@@ -186,14 +185,13 @@
             backface-visibility: hidden;
             border-radius: 15px;
             display: flex; flex-direction: column;
-            justify-content: flex-start; /* 上詰めに配置し下部の文字スペースを作る */
+            justify-content: flex-start;
             align-items: center;
             background: white; 
             box-shadow: 0 10px 25px rgba(255,255,255,0.2);
             box-sizing: border-box; 
         }
         
-        /* 裏面は中央揃えで「？」を出す */
         .card-back {
             background: linear-gradient(135deg, #007bff, #0056b3);
             color: white;
@@ -203,17 +201,15 @@
             justify-content: center; 
         }
         
-        /* 表面のレイアウト */
         .card-front {
             transform: rotateY(180deg);
             padding: 15px;
         }
         
-        /* 【修正】画像が大きくなりすぎないよう、縦の上限を70%に制限 */
         .card-front img { 
             width: 100%; 
             max-height: 70%; 
-            object-fit: contain; /* アスペクト比を維持して枠に収める */
+            object-fit: contain;
             border-radius: 8px; 
             display: block; 
         }
@@ -324,8 +320,9 @@
                 
                 cardEl.onclick = () => tapCard(card, isUnlocked);
                 
+                // 【改善案1】loading="lazy" を追加し、見えていない位置のカード画像を遅延読み込みさせます
                 cardEl.innerHTML = `
-                    <img src="${card.img}" alt="No.${card.no}" class="card-img">
+                    <img src="${card.img}" alt="No.${card.no}" class="card-img" loading="lazy">
                     <div class="card-info">
                         <div>${card.quiz.answer}</div>
                         <div style="font-size:12px; color:#666; margin-top:4px;">No.${card.no}</div>
@@ -440,9 +437,9 @@
             localStorage.setItem('unlockedCards', JSON.stringify(unlockedCards));
 
             const front = document.getElementById('animatedFront');
-            // 【修正】十分な縦幅があるため、文字部分が画像の下にスッキリゆとりを持って配置されます
+            // 【改善案1】ここにも loading="lazy" を入れて無駄な先読みを防ぎます
             front.innerHTML = `
-                <img src="${card.img}">
+                <img src="${card.img}" loading="lazy">
                 <div style="margin-top:20px; font-weight:bold; text-align:center; width:100%;">
                     <div style="font-size:22px; color:#333;">${card.quiz.answer}</div>
                     <div style="font-size:15px; color:#666; margin-top:8px;">No.${card.no} ゲット！</div>
