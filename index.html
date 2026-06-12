@@ -280,8 +280,7 @@
         @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     </style>
 </head>
-<body><div class="header-plate"><h1>ハイレベル英単語図鑑</h1><div class="counter" id="collectionCounter">0 / 50</div><div class="gacha-limit-info" id="gachaLimitInfo">本日のガチャ残り: 1回</div></div><div class="btn-group"><button class="scan-btn" onclick="openCamera()">QRコードをスキャン</button><button class="gacha-btn" id="directGachaBtn" onclick="startGachaViaButton()">デイリーガチャを引く</button><button class="coupon-open-btn" onclick="openCouponModal()">クーポン入力</button></div><div class="tabs-container" id="tabsContainer"></div><div id="camera-modal" class="modal-overlay"><div id="reader"></div><button class="camera-close" onclick="closeCamera()">閉じる</button></div><div id="coupon-overlay" class="modal-overlay"><div class="custom-box"><h3>🎫 クーポンコード入力</h3><p style="font-size: 13px; color: #555; margin: 0 0 15px 0;">コードを入力すると、ガチャを引ける回数が増えます！</p><input type="text" id="couponInput" class="modal-input" placeholder="コードを入力" autocomplete="off"><button class="modal-btn" style="background:#00796b;" onclick="submitCoupon()">コードを適用する</button><br><button class="modal-cancel-btn" onclick="closeCouponModal()">閉じる</button></div></div><div id="quiz-overlay" class="modal-overlay"><div class="custom-box"><h3 style="margin:0; color:#524130;" id="quizTitle">日本語の意味を書きなさい。</h3><div class="quiz-english" id="quizEnglish">Hello!</div><input type="text" id="answerInput" class="modal-input" placeholder="日本語の意味を入力" autocomplete="off"><button class="modal-btn" id="quizSubmitBtn" onclick="submitAnswer()">解答する</button><br>
-<button class="modal-cancel-btn" onclick="closeQuiz()">やめる</button></div></div><div id="gacha-overlay"><h2 id="gachaResultTitle" style="color: #fff; margin-bottom: 30px; text-shadow: 0 0 10px rgba(255,255,255,0.5);">結果発表！</h2><div class="gacha-container" id="gachaContainer"></div><button class="gacha-close-btn" id="gachaCloseBtn" onclick="closeGacha()">結果を確認して戻る</button></div><div id="zoom-overlay" onclick="closeZoom()"><div class="zoom-box" onclick="event.stopPropagation()"><button class="zoom-close-btn" onclick="closeZoom()">✕</button><div id="zoomContent"></div></div></div><div class="collection-grid" id="collectionGrid"></div><script>
+<body><div class="header-plate"><h1>ハイレベル英単語図鑑</h1><div class="counter" id="collectionCounter">0 / 50</div><div class="gacha-limit-info" id="gachaLimitInfo">本日のガチャ残り: 1回</div></div><div class="btn-group"><button class="scan-btn" onclick="openCamera()">QRコードをスキャン</button><button class="gacha-btn" id="directGachaBtn" onclick="startGachaViaButton()">デイリーガチャを引く</button><button class="coupon-open-btn" onclick="openCouponModal()">クーポン入力</button></div><div class="tabs-container" id="tabsContainer"></div><div id="camera-modal" class="modal-overlay"><div id="reader"></div><button class="camera-close" onclick="closeCamera()">閉じる</button></div><div id="coupon-overlay" class="modal-overlay"><div class="custom-box"><h3>🎫 クーポンコード入力</h3><p style="font-size: 13px; color: #555; margin: 0 0 15px 0;">コードを入力すると、ガチャを引ける回数が増えます！</p><input type="text" id="couponInput" class="modal-input" placeholder="コードを入力" autocomplete="off"><button class="modal-btn" style="background:#00796b;" onclick="submitCoupon()">コードを適用する</button><br><button class="modal-cancel-btn" onclick="closeCouponModal()">閉じる</button></div></div><div id="quiz-overlay" class="modal-overlay"><div class="custom-box"><h3 style="margin:0; color:#524130;" id="quizTitle">日本語の意味を書きなさい。</h3><div class="quiz-english" id="quizEnglish">Hello!</div><input type="text" id="answerInput" class="modal-input" placeholder="日本語の意味を入力" autocomplete="off"><button class="modal-btn" id="quizSubmitBtn" onclick="submitAnswer()">解答する</button><br><button class="modal-cancel-btn" onclick="closeQuiz()">やめる</button></div></div><div id="gacha-overlay"><h2 id="gachaResultTitle" style="color: #fff; margin-bottom: 30px; text-shadow: 0 0 10px rgba(255,255,255,0.5);">結果発表！</h2><div class="gacha-container" id="gachaContainer"></div><button class="gacha-close-btn" id="gachaCloseBtn" onclick="closeGacha()">結果を確認して戻る</button></div><div id="zoom-overlay" onclick="closeZoom()"><div class="zoom-box" onclick="event.stopPropagation()"><button class="zoom-close-btn" onclick="closeZoom()">✕</button><div id="zoomContent"></div></div></div><div class="collection-grid" id="collectionGrid"></div><script>
         const TOTAL_CARDS = 50; 
         const CARDS_PER_PAGE = 50; 
         let currentTabId = 0; 
@@ -293,56 +292,57 @@
         };
 
         const quizList = {
-1: { meaning: "二重線", answer: "a double line" },
-2: { meaning: "〜からはほど遠い/まったく違うもの", answer: "a far cry from" },
-3: { meaning: "職業/身分/社会階層", answer: "a walk of life" },
-4: { meaning: "〜を捨てる/あきらめる/見捨てる", answer: "abandon" },
-5: { meaning: "異常/異常性", answer: "abnormality" },
-6: { meaning: "〜を廃止する", answer: "abolish" },
-7: { meaning: "絶対的な/完全な", answer: "absolute" },
-8: { meaning: "〜を吸収する/夢中にさせる", answer: "absorb" },
-9: { meaning: "豊富な/大量の", answer: "abundant" },
-10: { meaning: "近づきやすい/利用しやすい/理解しやすい", answer: "accessible" },
-11: { meaning: "達成/実績/才能", answer: "accomplishment" },
-12: { meaning: "〜を説明する/〜の割合を占める/〜の原因となる", answer: "account for" },
-13: { meaning: "〜を達成する/成し遂げる", answer: "achieve" },
-14: { meaning: "達成/成就/業績", answer: "achievement" },
-15: { meaning: "酸/酸性の", answer: "acid" },
-16: { meaning: "〜を獲得する/身につける", answer: "acquire" },
-17: { meaning: "〜を適応させる/合わせる/慣れる", answer: "adapt" },
-18: { meaning: "適応/順順/改作", answer: "adaptation" },
-19: { meaning: "〜を増やす/加える", answer: "add to" },
-20: { meaning: "これに加えて/さらに言えば", answer: "add to this" },
-21: { meaning: "〜に話しかける/（問題に）取り組む/住所", answer: "address" },
-22: { meaning: "〜を調整する/合わせる/慣れる", answer: "adjust" },
-23: { meaning: "行政/管理/政府/経営", answer: "administration" },
-24: { meaning: "感嘆/賞賛/憧れ", answer: "admiration" },
-25: { meaning: "明らかに/誰もが認めるように", answer: "admittedly" },
-26: { meaning: "〜を採用する/（養子に）迎える", answer: "adopt" },
-27: { meaning: "採用/養子縁組", answer: "adoption" },
-28: { meaning: "〜を主張する/支持する/擁護者", answer: "advocate" },
-29: { meaning: "〜に影響を与える/作用する", answer: "affect" },
-30: { meaning: "手頃な/購入しやすい", answer: "affordable" },
-31: { meaning: "動揺した/興奮した", answer: "agitated" },
-32: { meaning: "農業の/農作の", answer: "agricultural" },
-33: { meaning: "警戒/用心深さ", answer: "alertness" },
-34: { meaning: "同盟を結んだ/関連した", answer: "allied" },
-35: { meaning: "〜と並んで/〜と一緒に/〜のそばに", answer: "alongside" },
-36: { meaning: "代わりの/選択肢/二者択一の", answer: "alternative" },
-37: { meaning: "アルミニウムの", answer: "aluminum" },
-38: { meaning: "素人くさい/下手な", answer: "amateurish" },
+
+1: { meaning: "二重線/複線", answer: "a double line" },
+2: { meaning: "〜からはほど遠い/まったく違うもの/月とすっぽん", answer: "a far cry from" },
+3: { meaning: "職業/身分/社会階層/あらゆる歩み/人生の道のり", answer: "a walk of life" },
+4: { meaning: "〜を捨てる/あきらめる/見捨てる/〜を置き去りにする/（計画などを）中止する", answer: "abandon" },
+5: { meaning: "異常/異常性/変形/異常現象", answer: "abnormality" },
+6: { meaning: "〜を廃止する/（法律などを）なくす/撤廃する", answer: "abolish" },
+7: { meaning: "絶対的な/完全な/無条件の/決定的な", answer: "absolute" },
+8: { meaning: "〜を吸収する/夢中にさせる/（衝撃などを）和らげる/（知識を）吸い上げる", answer: "absorb" },
+9: { meaning: "豊富な/大量の/富んだ/満ちあふれた", answer: "abundant" },
+10: { meaning: "近づきやすい/利用しやすい/理解しやすい/（人柄が）気さくな/交通の便が良い", answer: "accessible" },
+11: { meaning: "達成/実績/才能/成果/教養/芸事", answer: "accomplishment" },
+12: { meaning: "〜を説明する/〜の割合を占める/〜の原因となる/〜の責任を負う/（行方などを）確認する", answer: "account for" },
+13: { meaning: "〜を達成する/成し遂げる/（目的を）果たす/得る", answer: "achieve" },
+14: { meaning: "達成/成就/業績/偉業/成果", answer: "achievement" },
+15: { meaning: "酸/酸性の/酸味のある/（言葉などが）痛烈な/辛辣な", answer: "acid" },
+16: { meaning: "〜を獲得する/身につける/（会社などを）買収する/手に入れる", answer: "acquire" },
+17: { meaning: "〜を適応させる/合わせる/慣れる/（小説などを）改変する/脚色する", answer: "adapt" },
+18: { meaning: "適応/順応/改作/脚色/翻案", answer: "adaptation" },
+19: { meaning: "〜を増やす/加える/〜を増大させる", answer: "add to" },
+20: { meaning: "これに加えて/さらに言えば/おまけに", answer: "add to this" },
+21: { meaning: "〜に話しかける/（問題に）取り組む/住所/演説/〜に宛名を書く", answer: "address" },
+22: { meaning: "〜を調整する/合わせる/慣れる/（姿勢などを）正す/（保険金を）査定する", answer: "adjust" },
+23: { meaning: "行政/管理/政府/経営/運営/政権/（薬の）投与", answer: "administration" },
+24: { meaning: "感嘆/賞賛/憧れ/賛美", answer: "admiration" },
+25: { meaning: "明らかに/誰もが認めるように/言いにくいが/確かに", answer: "admittedly" },
+26: { meaning: "〜を採用する/（養子に）迎える/（方針などを）選ぶ/（法案を）可決する", answer: "adopt" },
+27: { meaning: "採用/養子縁組/選定/可決", answer: "adoption" },
+28: { meaning: "〜を主張する/支持する/擁護者/代弁者/弁護士/〜を勧める", answer: "advocate" },
+29: { meaning: "〜に影響を与える/作用する/（病気が人・体を）冒す/〜の心を動かす/〜の振りをる", answer: "affect" },
+30: { meaning: "手頃な/購入しやすい/安価な/無理のない", answer: "affordable" },
+31: { meaning: "動揺した/興奮した/動転した/波立った", answer: "agitated" },
+32: { meaning: "農業の/農作の/農学の/土地の", answer: "agricultural" },
+33: { meaning: "警戒/用心深さ/機敏さ/覚醒（状態）", answer: "alertness" },
+34: { meaning: "同盟を結んだ/関連した/連合した/同類の", answer: "allied" },
+35: { meaning: "〜と並んで/〜と一緒に/〜のそばに/〜と同時に", answer: "alongside" },
+36: { meaning: "代わりの/選択肢/二者択一の/オルタナティブな/既存のものに代わる", answer: "alternative" },
+37: { meaning: "アルミニウムの/アルミ製の", answer: "aluminum" },
+38: { meaning: "素人くさい/下手な/未熟な/アマチュアらしい", answer: "amateurish" },
 39: { meaning: "アミノ酸", answer: "amino acid" },
-40: { meaning: "〜を楽しませる/面白がらせる", answer: "amuse" },
-41: { meaning: "釣り人", answer: "angler" },
-42: { meaning: "苦痛/苦悩/悲痛", answer: "anguish" },
-43: { meaning: "動物行動学者", answer: "animal behaviorist" },
-44: { meaning: "抗菌の/防腐の", answer: "antibacterial" },
-45: { meaning: "期待/予想/先取り", answer: "anticipation" },
-46: { meaning: "明白な/一見〜らしい", answer: "apparent" },
-47: { meaning: "〜を求める/〜に訴えかける", answer: "appeal for" },
-48: { meaning: "応募者/志願者", answer: "applicant" },
-49: { meaning: "〜に適用される/〜に当てはまる/〜に申し込む", answer: "apply to" },
-50: { meaning: "適切な/ふさわしい", answer: "appropriate" },
+40: { meaning: "〜を楽しませる/面白がらせる/（時間を）つぶさせる", answer: "amuse" },
+41: { meaning: "釣り人/（特に）竿釣り師", answer: "angler" },
+42: { meaning: "苦痛/苦悩/悲痛/激痛/悶え", answer: "anguish" },
+43: { meaning: "動物行動学者/動物行動主義者", answer: "animal behaviorist" },
+44: { meaning: "抗菌の/防腐の/抗菌剤/抗菌ペプチド", answer: "antibacterial" },
+45: { meaning: "期待/予想/先取り/楽しみにして待つこと/予期", answer: "anticipation" },
+46: { meaning: "明白な/一見〜らしい/見かけ上の/表面的な", answer: "apparent" },
+47: { meaning: "〜を求める/〜に訴えかける/〜を懇願する/〜を要請する", answer: "appeal for" },
+48: { meaning: "応募者/志願者/申請者/受験生", answer: "applicant" },
+49: { meaning: "〜に適用される/〜に当てはまる/〜に申し込む/〜に宛てる/〜に塗る", answer: "apply to" },
+50: { meaning: "適切な/ふさわしい/固有の/〜に特有の/〜を私物化する/〜を予算に計上する", answer: "appropriate" },
         };
 
         const cardsData = [];
@@ -590,10 +590,22 @@
             return text;
         }
 
+        // 🆕 【超進化】お互いがどちらかに含まれていれば正解（部分一致・表記ゆれ対応）にする関数
         function validateAnswer(userInput, allowedAnswersString) {
             const user = cleanText(userInput);
+            if (user === "") return false; // 空欄なら即終了
+            
             const answersArray = allowedAnswersString.split("/");
-            return answersArray.some(ans => cleanText(ans) === user);
+            
+            // スラッシュで区切られた模範解答を1つずつチェック
+            return answersArray.some(ans => {
+                const model = cleanText(ans);
+                if (model === "") return false;
+                
+                // 1. ユーザーの入力の中に模範解答が含まれている (例:「ありがとう」に「ありがとう」が含まれる)
+                // 2. 模範解答の中にユーザーの入力が含まれている (例:「ありがとうございます」に「ありがとう」が含まれる)
+                return user.includes(model) || model.includes(user);
+            });
         }
 
         function submitAnswer() {
