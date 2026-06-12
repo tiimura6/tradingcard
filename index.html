@@ -3,144 +3,201 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>英語トレカコレクション</title>
+    <title>ハイレベル英単語図鑑</title>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
         body {
             font-family: sans-serif;
-            background-color: #f0f2f5;
+            background-color: #0f0a1c; 
+            background-image: url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1000&auto=format&fit=crop'); 
+            background-size: cover;          
+            background-position: center;     
+            background-attachment: fixed;     
             margin: 0;
             padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
-        h1 { color: #333; margin-bottom: 5px; }
-        .counter { font-size: 16px; color: #666; margin-bottom: 20px; font-weight: bold; }
+
+        /* 上部の文字を見やすくする半透明プレート */
+        .header-plate {
+            background: rgba(253, 248, 237, 0.88); 
+            border: 2px solid #aa7c11; 
+            border-radius: 15px;
+            padding: 15px 30px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+            margin-bottom: 25px;
+            width: 90%;
+            max-width: 450px;
+            box-sizing: border-box;
+        }
         
-        /* スキャンボタン */
-        .scan-btn {
-            padding: 12px 30px;
-            font-size: 16px;
+        h1 { 
+            color: #3a220f; 
+            margin: 0 0 5px 0;
+            font-size: 24px; 
+            text-shadow: 1px 1px 0px rgba(255,255,255,0.8);
+        }
+        .counter { 
+            font-size: 18px; 
+            color: #5c3e21; 
+            margin: 0 0 12px 0; 
             font-weight: bold;
-            background: #28a745;
-            color: white;
-            border: none;
+        }
+        
+        .gacha-limit-info {
+            font-size: 13px;
+            color: #fff;
+            font-weight: bold;
+            display: inline-block;
+            background: linear-gradient(#801616, #610b0b);
+            padding: 5px 16px;
+            border-radius: 20px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+            border: 1px solid #4a0505;
+        }
+
+        /* 操作ボタンエリア */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .scan-btn {
+            padding: 14px 24px;
+            font-size: 15px;
+            font-weight: bold;
+            background: linear-gradient(#aa7c11, #875e06);
+            color: #fff;
+            border: 1px solid #614303;
             border-radius: 25px;
             cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: background 0.2s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+            transition: all 0.2s;
         }
-        .scan-btn:hover { background: #218838; }
+        .scan-btn:hover { background: linear-gradient(#875e06, #614303); }
+
+        .gacha-btn {
+            padding: 14px 24px;
+            font-size: 15px;
+            font-weight: bold;
+            background: linear-gradient(#6200ea, #4a148c);
+            color: #fff;
+            border: 1px solid #311b92;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+            transition: all 0.2s;
+        }
+        .gacha-btn:hover { background: linear-gradient(#4a148c, #311b92); }
+        .gacha-btn:disabled {
+            background: #5a5650;
+            border-color: #423f3a;
+            color: #a39f98;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .coupon-open-btn {
+            padding: 14px 24px;
+            font-size: 15px;
+            font-weight: bold;
+            background: linear-gradient(#00796b, #004d40);
+            color: #fff;
+            border: 1px solid #00332c;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+            transition: all 0.2s;
+        }
+        .coupon-open-btn:hover { background: linear-gradient(#004d40, #00332c); }
+
+        /* 50枚区切りのタブ用スタイルエリア */
+        .tabs-container {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            max-width: 750px;
+            margin-bottom: 10px;
+            overflow-x: auto; 
+            padding-bottom: 5px;
+        }
+        .tab-button {
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            background: rgba(253, 248, 237, 0.3);
+            color: #fff;
+            border: 2px solid rgba(253, 248, 237, 0.4);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px); 
+        }
+        .tab-button:hover { background: rgba(253, 248, 237, 0.5); }
+        .tab-button.active {
+            background: #fffdf9;
+            color: #3a220f;
+            border-color: #aa7c11;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            text-shadow: none;
+        }
 
         /* コレクション全体のグリッド */
         .collection-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(min(120px, 100%), 1fr));
             gap: 15px;
             width: 100%;
-            max-width: 700px;
-            margin-top: 20px;
+            max-width: 750px; 
         }
+        
+        @media (min-width: 600px) {
+            .collection-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+
         .card-container {
-            background: white;
+            background: rgba(255, 254, 251, 0.95); 
             border-radius: 12px;
             padding: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
             text-align: center;
             cursor: pointer;
             transition: transform 0.2s;
         }
         .card-container:active { transform: scale(0.95); }
-        
-        /* 解禁済みカードの画像スタイル */
         .card-img { width: 100%; height: auto; border-radius: 8px; display: block; }
         
-        /* 未解禁カード用の軽量ダミー枠 */
         .locked-placeholder {
             width: 100%;
             aspect-ratio: 2 / 3;
-            background: #cbd5e1;
+            background: #2b253a; 
             border-radius: 8px;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #64748b;
+            color: #cca3ff;
             font-size: 32px;
             font-weight: bold;
+            box-shadow: inset 0 0 12px rgba(0,0,0,0.6);
+            border: 1px solid #473a63;
         }
-        
-        .card-info { margin-top: 8px; font-size: 14px; font-weight: bold; color: #333; }
+        .card-info { margin-top: 8px; font-size: 14px; font-weight: bold; color: #332415; }
 
-        /* カメラ画面のポップアップ */
-        #camera-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
-            z-index: 10;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-        #reader { width: 300px; background: white; border-radius: 8px; overflow: hidden; }
-        .close-btn { margin-top: 15px; padding: 8px 16px; background: white; border: none; border-radius: 4px; cursor: pointer; }
-
-        /* カード拡大表示のオーバーレイ */
-        #zoom-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
-            z-index: 30;
-            justify-content: center;
-            align-items: center;
-        }
-        .zoom-box {
-            position: relative; /* 🆕 ✕ボタンを右上に絶対配置するための基準点 */
-            background: white;
-            padding: 15px;
-            border-radius: 20px;
-            width: 85%;
-            max-width: 320px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            animation: zoomIn 0.25s ease-out;
-        }
-        .zoom-box img { width: 100%; height: auto; border-radius: 12px; }
-        .zoom-info { margin-top: 12px; font-size: 18px; font-weight: bold; color: #333; }
-        
-        /* 🆕 拡大画面用の解除（閉じる）ボタン */
-        .zoom-close-btn {
-            position: absolute;
-            top: -15px;
-            right: -15px;
-            width: 36px;
-            height: 36px;
-            background: #ff4d4d;
-            color: white;
-            border: 2px solid white;
-            border-radius: 50%;
-            font-size: 18px;
-            font-weight: bold;
-            line-height: 32px;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .zoom-close-btn:hover { background: #cc0000; }
-
-        @keyframes zoomIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        /* クイズ画面のポップアップ */
-        #quiz-overlay {
+        /* ポップアップ関連共通オーバーレイ */
+        .modal-overlay {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -149,239 +206,294 @@
             justify-content: center;
             align-items: center;
         }
-        .quiz-box {
-            background: white;
+        .custom-box {
+            background: #fffef7;
             padding: 25px;
             border-radius: 15px;
             width: 85%;
             max-width: 400px;
             text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            border: 2px solid #aa7c11;
+            box-sizing: border-box;
         }
-        .quiz-meaning { font-size: 24px; font-weight: bold; color: #e44d26; margin: 15px 0; }
         
-        .quiz-input {
-            width: 90%;
-            padding: 12px;
-            font-size: 18px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            text-align: center;
-            outline: none;
+        .modal-input {
+            width: 100%; padding: 12px; font-size: 18px; border: 2px solid #cbd5e1; border-radius: 8px;
+            margin-bottom: 15px; text-align: center; outline: none; box-sizing: border-box;
         }
-        .quiz-input:focus { border-color: #007bff; }
+        .modal-input:focus { border-color: #aa7c11; }
         
-        .submit-btn {
-            width: 96%;
-            padding: 12px;
-            font-size: 16px;
-            font-weight: bold;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
+        .modal-btn {
+            width: 100%; padding: 12px; font-size: 16px; font-weight: bold;
+            background: #aa7c11; color: white; border: none; border-radius: 8px; cursor: pointer;
         }
-        .submit-btn:hover { background: #0056b3; }
-        .quiz-cancel-btn {
-            margin-top: 10px;
-            background: none;
-            border: none;
-            color: #666;
-            cursor: pointer;
-            text-decoration: underline;
+        .modal-btn:hover { background: #875e06; }
+        .modal-cancel-btn { margin-top: 12px; background: none; border: none; color: #666; cursor: pointer; text-decoration: underline; font-size: 14px; }
+
+        /* カメラ専用 */
+        #camera-modal { background: rgba(0,0,0,0.85); z-index: 10; flex-direction: column; }
+        #reader { width: 300px; background: white; border-radius: 8px; overflow: hidden; }
+        .camera-close { margin-top: 15px; padding: 8px 16px; background: white; border: none; border-radius: 4px; cursor: pointer; }
+
+        /* ガチャ獲得画面 */
+        #gacha-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 6, 18, 0.97); z-index: 20; flex-direction: column; justify-content: center; align-items: center;
+        }
+        .gacha-container {
+            display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; max-width: 90%; perspective: 1000px; margin-bottom: 30px;
+        }
+        .gacha-card { width: 140px; height: 240px; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .gacha-card.do-flip { transform: rotateY(180deg); }
+        .gacha-face {
+            position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 10px;
+            display: flex; flex-direction: column; justify-content: flex-start; align-items: center; background: #fffdf9; 
+            box-shadow: 0 4px 15px rgba(255,255,255,0.1); box-sizing: border-box; 
+        }
+        .gacha-back {
+            background: linear-gradient(135deg, #733b10, #3d1c03); color: #edd9b4; font-size: 36px; font-weight: bold; border: 3px solid #aa7c11; justify-content: center; 
+        }
+        .gacha-back.is-missed { background: linear-gradient(135deg, #3a3a3a, #151515); color: #666; border-color: #444; font-size: 28px; }
+        .gacha-front { transform: rotateY(180deg); padding: 5px; border: 3px solid #aa7c11; border-radius: 10px; }
+        .gacha-front img { width: 100%; max-height: 75%; object-fit: contain; border-radius: 5px; }
+        .gacha-info { margin-top: 10px; font-size: 14px; font-weight: bold; text-align: center; color: #332415; }
+        .gacha-close-btn {
+            display: none; padding: 12px 40px; font-size: 18px; font-weight: bold; background: #aa7c11; color: white;
+            border: none; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 15px rgba(170,124,17,0.4);
         }
 
-        /* ゲットアニメーション画面 */
-        #get-animation-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
-            z-index: 20;
-            justify-content: center;
-            align-items: center;
-            perspective: 1000px;
+        /* 拡大表示 */
+        #zoom-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 30; justify-content: center; align-items: center;
         }
-        
-        .flip-card {
-            width: 260px;
-            height: 480px;
-            transform-style: preserve-3d;
-            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
+        .zoom-box {
+            position: relative; background: #fffdf9; padding: 15px; border-radius: 20px; width: 85%; max-width: 320px; text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6); animation: zoomIn 0.25s ease-out; border: 3px solid #aa7c11;
         }
-        .flip-card.do-flip { transform: rotateY(180deg); }
-        
-        .card-face {
-            position: absolute;
-            width: 100%; height: 100%;
-            backface-visibility: hidden;
-            border-radius: 15px;
-            display: flex; flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
-            background: white; 
-            box-shadow: 0 10px 25px rgba(255,255,255,0.2);
-            box-sizing: border-box; 
+        .zoom-box img { width: 100%; height: auto; border-radius: 12px; }
+        .zoom-info { margin-top: 12px; font-size: 18px; font-weight: bold; color: #332415; }
+        .zoom-close-btn {
+            position: absolute; top: -15px; right: -15px; width: 36px; height: 36px; background: #c94c4c; color: white;
+            border: 2px solid white; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
-        
-        .card-back {
-            background: linear-gradient(135deg, #007bff, #0056b3);
-            color: white;
-            font-size: 48px;
-            font-weight: bold;
-            border: 5px solid white;
-            justify-content: center; 
-        }
-        
-        .card-front {
-            transform: rotateY(180deg);
-            padding: 15px;
-        }
-        
-        .card-front img { 
-            width: 100%; 
-            max-height: 70%; 
-            object-fit: contain;
-            border-radius: 8px; 
-            display: block; 
-        }
+        @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     </style>
 </head>
-<body>
+<body><div class="header-plate"><h1>ハイレベル英単語図鑑</h1><div class="counter" id="collectionCounter">0 / 50</div><div class="gacha-limit-info" id="gachaLimitInfo">本日のガチャ残り: 1回</div></div><div class="btn-group"><button class="scan-btn" onclick="openCamera()">QRコードをスキャン</button><button class="gacha-btn" id="directGachaBtn" onclick="startGachaViaButton()">デイリーガチャを引く</button><button class="coupon-open-btn" onclick="openCouponModal()">クーポン入力</button></div><div class="tabs-container" id="tabsContainer"></div><div id="camera-modal" class="modal-overlay"><div id="reader"></div><button class="camera-close" onclick="closeCamera()">閉じる</button></div><div id="coupon-overlay" class="modal-overlay"><div class="custom-box"><h3>🎫 クーポンコード入力</h3><p style="font-size: 13px; color: #555; margin: 0 0 15px 0;">コードを入力すると、ガチャを引ける回数が増えます！</p><input type="text" id="couponInput" class="modal-input" placeholder="コードを入力" autocomplete="off"><button class="modal-btn" style="background:#00796b;" onclick="submitCoupon()">コードを適用する</button><br><button class="modal-cancel-btn" onclick="closeCouponModal()">閉じる</button></div></div><div id="quiz-overlay" class="modal-overlay"><div class="custom-box"><h3 style="margin:0; color:#524130;" id="quizTitle">日本語の意味を書きなさい。</h3><div class="quiz-english" id="quizEnglish">Hello!</div><input type="text" id="answerInput" class="modal-input" placeholder="日本語の意味を入力" autocomplete="off"><button class="modal-btn" id="quizSubmitBtn" onclick="submitAnswer()">解答する</button><br>
+<button class="modal-cancel-btn" onclick="closeQuiz()">やめる</button></div></div><div id="gacha-overlay"><h2 id="gachaResultTitle" style="color: #fff; margin-bottom: 30px; text-shadow: 0 0 10px rgba(255,255,255,0.5);">結果発表！</h2><div class="gacha-container" id="gachaContainer"></div><button class="gacha-close-btn" id="gachaCloseBtn" onclick="closeGacha()">結果を確認して戻る</button></div><div id="zoom-overlay" onclick="closeZoom()"><div class="zoom-box" onclick="event.stopPropagation()"><button class="zoom-close-btn" onclick="closeZoom()">✕</button><div id="zoomContent"></div></div></div><div class="collection-grid" id="collectionGrid"></div><script>
+        const TOTAL_CARDS = 50; 
+        const CARDS_PER_PAGE = 50; 
+        let currentTabId = 0; 
 
-    <h1>英語トレカ図鑑</h1>
-    <div class="counter" id="collectionCounter">0 / 40</div>
-    
-    <button class="scan-btn" onclick="openCamera()">QRコードをスキャン</button>
-
-    <div id="camera-modal">
-        <div id="reader"></div>
-        <button class="close-btn" onclick="closeCamera()">閉じる</button>
-    </div>
-
-    <div id="quiz-overlay">
-        <div class="quiz-box">
-            <h3 style="margin:0; color:#666;">ミッション：英語で書きなさい</h3>
-            <div class="quiz-meaning" id="quizMeaning">こんにちは</div>
-            
-            <input type="text" id="answerInput" class="quiz-input" placeholder="英語を入力してね" autocomplete="off" autofocus>
-            
-            <button class="submit-btn" onclick="checkAnswer()">解答する</button>
-            <br>
-            <button class="quiz-cancel-btn" onclick="closeQuiz()">あきらめる</button>
-        </div>
-    </div>
-
-    <div id="get-animation-overlay" onclick="closeAnimation()">
-        <div class="flip-card" id="flipCard">
-            <div class="card-face card-back">？</div>
-            <div class="card-face card-front" id="animatedFront"></div>
-        </div>
-    </div>
-
-    <div id="zoom-overlay" onclick="closeZoom()">
-        <div class="zoom-box" onclick="event.stopPropagation()">
-            <button class="zoom-close-btn" onclick="closeZoom()">✕</button>
-            <div id="zoomContent"></div>
-        </div>
-    </div>
-
-    <div class="collection-grid" id="collectionGrid"></div>
-
-    <script>
-        const TOTAL_CARDS = 40; 
-
-        // 記述式用のクイズデータ
-        const quizList = {
-            1: { meaning: "二重線", answer: "a double line" },
-            2: { meaning: "まったく違う", answer: "a far cry from" },
-            3: { meaning: "職業、身分", answer: "a walk of life" },
-            4: { meaning: "放棄する、捨てる", answer: "abandon" },
-            5: { meaning: "異常、異変", answer: "abnormality" }
+        const VALID_COUPONS = {
+            "MAGIC5": 5,
+            "BONUS3": 3,
+            "SUPER10": 10
         };
 
-        // 1. カードデータを自動生成
+        const quizList = {
+1: { meaning: "二重線", answer: "a double line" },
+2: { meaning: "〜からはほど遠い/まったく違うもの", answer: "a far cry from" },
+3: { meaning: "職業/身分/社会階層", answer: "a walk of life" },
+4: { meaning: "〜を捨てる/あきらめる/見捨てる", answer: "abandon" },
+5: { meaning: "異常/異常性", answer: "abnormality" },
+6: { meaning: "〜を廃止する", answer: "abolish" },
+7: { meaning: "絶対的な/完全な", answer: "absolute" },
+8: { meaning: "〜を吸収する/夢中にさせる", answer: "absorb" },
+9: { meaning: "豊富な/大量の", answer: "abundant" },
+10: { meaning: "近づきやすい/利用しやすい/理解しやすい", answer: "accessible" },
+11: { meaning: "達成/実績/才能", answer: "accomplishment" },
+12: { meaning: "〜を説明する/〜の割合を占める/〜の原因となる", answer: "account for" },
+13: { meaning: "〜を達成する/成し遂げる", answer: "achieve" },
+14: { meaning: "達成/成就/業績", answer: "achievement" },
+15: { meaning: "酸/酸性の", answer: "acid" },
+16: { meaning: "〜を獲得する/身につける", answer: "acquire" },
+17: { meaning: "〜を適応させる/合わせる/慣れる", answer: "adapt" },
+18: { meaning: "適応/順順/改作", answer: "adaptation" },
+19: { meaning: "〜を増やす/加える", answer: "add to" },
+20: { meaning: "これに加えて/さらに言えば", answer: "add to this" },
+21: { meaning: "〜に話しかける/（問題に）取り組む/住所", answer: "address" },
+22: { meaning: "〜を調整する/合わせる/慣れる", answer: "adjust" },
+23: { meaning: "行政/管理/政府/経営", answer: "administration" },
+24: { meaning: "感嘆/賞賛/憧れ", answer: "admiration" },
+25: { meaning: "明らかに/誰もが認めるように", answer: "admittedly" },
+26: { meaning: "〜を採用する/（養子に）迎える", answer: "adopt" },
+27: { meaning: "採用/養子縁組", answer: "adoption" },
+28: { meaning: "〜を主張する/支持する/擁護者", answer: "advocate" },
+29: { meaning: "〜に影響を与える/作用する", answer: "affect" },
+30: { meaning: "手頃な/購入しやすい", answer: "affordable" },
+31: { meaning: "動揺した/興奮した", answer: "agitated" },
+32: { meaning: "農業の/農作の", answer: "agricultural" },
+33: { meaning: "警戒/用心深さ", answer: "alertness" },
+34: { meaning: "同盟を結んだ/関連した", answer: "allied" },
+35: { meaning: "〜と並んで/〜と一緒に/〜のそばに", answer: "alongside" },
+36: { meaning: "代わりの/選択肢/二者択一の", answer: "alternative" },
+37: { meaning: "アルミニウムの", answer: "aluminum" },
+38: { meaning: "素人くさい/下手な", answer: "amateurish" },
+39: { meaning: "アミノ酸", answer: "amino acid" },
+40: { meaning: "〜を楽しませる/面白がらせる", answer: "amuse" },
+41: { meaning: "釣り人", answer: "angler" },
+42: { meaning: "苦痛/苦悩/悲痛", answer: "anguish" },
+43: { meaning: "動物行動学者", answer: "animal behaviorist" },
+44: { meaning: "抗菌の/防腐の", answer: "antibacterial" },
+45: { meaning: "期待/予想/先取り", answer: "anticipation" },
+46: { meaning: "明白な/一見〜らしい", answer: "apparent" },
+47: { meaning: "〜を求める/〜に訴えかける", answer: "appeal for" },
+48: { meaning: "応募者/志願者", answer: "applicant" },
+49: { meaning: "〜に適用される/〜に当てはまる/〜に申し込む", answer: "apply to" },
+50: { meaning: "適切な/ふさわしい", answer: "appropriate" },
+        };
+
         const cardsData = [];
         for (let i = 1; i <= TOTAL_CARDS; i++) {
-            const quiz = quizList[i] || { 
-                meaning: `日本語の意味 ${i}`, 
-                answer: `English ${i}` 
-            };
-
-            cardsData.push({
-                id: `card-${i}`,
-                img: `${i}.png`,
-                no: i,
-                quiz: quiz
-            });
+            const quiz = quizList[i] || { meaning: `日本語の意味 ${i}`, answer: `English ${i}` };
+            cardsData.push({ id: `card-${i}`, img: `photo/${i}.png`, no: i, quiz: quiz });
         }
 
-        // 2. 解禁状態の管理
         let unlockedCards = JSON.parse(localStorage.getItem('unlockedCards')) || [];
         let html5QrcodeScanner = null;
-        let currentScanningCard = null;
+        let currentSingleCard = null; 
 
-        // 3. 図鑑とカウンターの描画
+        let gachaSession = {
+            isGachaMode: false,
+            selectedCard: null,  
+            userAnswer: ""
+        };
+
+        let dailyGachaStorage = JSON.parse(localStorage.getItem('dailyGachaStorage')) || { 
+            lastDate: "", 
+            count: 1,
+            usedCoupons: [] 
+        };
+        if (!dailyGachaStorage.usedCoupons) {
+            dailyGachaStorage.usedCoupons = [];
+        }
+
+        function checkAndResetDailyGacha() {
+            const todayStr = new Date().toLocaleDateString();
+            if (dailyGachaStorage.lastDate !== todayStr) {
+                dailyGachaStorage.lastDate = todayStr;
+                dailyGachaStorage.count = 1; 
+                localStorage.setItem('dailyGachaStorage', JSON.stringify(dailyGachaStorage));
+            }
+            const remainingCount = dailyGachaStorage.count;
+            document.getElementById('gachaLimitInfo').innerText = remainingCount > 0 
+                ? `本日のガチャ残り: ${remainingCount}回` 
+                : `本日のガチャ残り: 0回 (次回は明日)`;
+            document.getElementById('directGachaBtn').disabled = (remainingCount <= 0);
+        }
+
+        function openCouponModal() {
+            document.getElementById('couponInput').value = '';
+            document.getElementById('coupon-overlay').style.display = 'flex';
+            setTimeout(() => { document.getElementById('couponInput').focus(); }, 100);
+        }
+
+        function closeCouponModal() {
+            document.getElementById('coupon-overlay').style.display = 'none';
+        }
+
+        function submitCoupon() {
+            const inputCode = document.getElementById('couponInput').value.trim().toUpperCase(); 
+            
+            if (inputCode === "") {
+                alert("コードを入力してください。");
+                return;
+            }
+
+            if (!(inputCode in VALID_COUPONS)) {
+                alert("無効なクーポンコードです。正しいコードを入力してください。");
+                return;
+            }
+
+            if (dailyGachaStorage.usedCoupons.includes(inputCode)) {
+                alert("このクーポンコードはすでに使用されています。");
+                return;
+            }
+
+            const rewardCount = VALID_COUPONS[inputCode];
+            dailyGachaStorage.count += rewardCount; 
+            dailyGachaStorage.usedCoupons.push(inputCode); 
+            localStorage.setItem('dailyGachaStorage', JSON.stringify(dailyGachaStorage));
+
+            closeCouponModal();
+            checkAndResetDailyGacha(); 
+
+            confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 } });
+            alert("クーポン適用成功！🎉");
+        }
+
+        function renderTabs() {
+            const tabsContainer = document.getElementById('tabsContainer');
+            tabsContainer.innerHTML = '';
+            
+            const totalTabs = Math.ceil(TOTAL_CARDS / CARDS_PER_PAGE);
+            if (totalTabs <= 1) return;
+
+            for (let i = 0; i < totalTabs; i++) {
+                const startNo = (i * CARDS_PER_PAGE) + 1;
+                const endNo = Math.min((i + 1) * CARDS_PER_PAGE, TOTAL_CARDS); 
+                
+                const btn = document.createElement('button');
+                btn.className = `tab-button ${i === currentTabId ? 'active' : ''}`;
+                btn.innerText = `${startNo} 〜 ${endNo}`;
+                
+                btn.onclick = () => {
+                    currentTabId = i;
+                    renderTabs(); 
+                    renderCollection(); 
+                };
+                tabsContainer.appendChild(btn);
+            }
+        }
+
         function renderCollection() {
+            checkAndResetDailyGacha();
             document.getElementById('collectionCounter').innerText = `${unlockedCards.length} / ${TOTAL_CARDS}`;
             const grid = document.getElementById('collectionGrid');
             grid.innerHTML = '';
             
-            cardsData.forEach(card => {
+            const startIndex = currentTabId * CARDS_PER_PAGE;
+            const endIndex = startIndex + CARDS_PER_PAGE;
+            const currentFilteredCards = cardsData.slice(startIndex, endIndex);
+
+            currentFilteredCards.forEach(card => {
                 const isUnlocked = unlockedCards.includes(card.id);
                 const cardEl = document.createElement('div');
                 cardEl.className = `card-container ${isUnlocked ? '' : 'locked'}`;
                 
                 cardEl.onclick = () => tapCard(card, isUnlocked);
                 
-                let cardVisualHTML = '';
-                if (isUnlocked) {
-                    cardVisualHTML = `<img src="${card.img}" alt="No.${card.no}" class="card-img" loading="lazy">`;
-                } else {
-                    cardVisualHTML = `<div class="locked-placeholder">？</div>`;
-                }
+                let cardVisualHTML = isUnlocked 
+                    ? `<img src="${card.img}" alt="No.${card.no}" class="card-img" loading="lazy">`
+                    : `<div class="locked-placeholder">？</div>`;
                 
-                // 🆕 【修正】カードの下にあった「英単語のテキスト」を削除し、No.XX のみにしました
                 cardEl.innerHTML = `
                     ${cardVisualHTML}
-                    <div class="card-info">
-                        <div>No.${card.no}</div>
-                    </div>
+                    <div class="card-info"><div>No.${card.no}</div></div>
                 `;
                 grid.appendChild(cardEl);
             });
         }
 
-        // カードをタップしたときの拡大処理
         function tapCard(card, isUnlocked) {
             if (!isUnlocked) return;
-
             const zoomContent = document.getElementById('zoomContent');
-            // 🆕 【修正】拡大画面のテキストからも英単語と意味を削除し、No.XX のみにしました
             zoomContent.innerHTML = `
                 <img src="${card.img}" alt="No.${card.no}">
-                <div class="zoom-info">
-                    <div>No.${card.no}</div>
-                </div>
+                <div class="zoom-info"><div>No.${card.no}</div></div>
             `;
             document.getElementById('zoom-overlay').style.display = 'flex';
         }
 
-        function closeZoom() {
-            document.getElementById('zoom-overlay').style.display = 'none';
-        }
+        function closeZoom() { document.getElementById('zoom-overlay').style.display = 'none'; }
 
-        // アプリ内カメラの起動
         function openCamera() {
             document.getElementById('camera-modal').style.display = 'flex';
             html5QrcodeScanner = new Html5Qrcode("reader");
             html5QrcodeScanner.start(
-                { facingMode: "environment" },
-                { fps: 10, qrbox: 250 },
-                onScanSuccess
+                { facingMode: "environment" }, { fps: 10, qrbox: 250 }, onScanSuccess
             ).catch(err => {
                 alert("カメラの起動に失敗しました。");
                 document.getElementById('camera-modal').style.display = 'none';
@@ -390,103 +502,215 @@
 
         function closeCamera() {
             if (html5QrcodeScanner) {
-                html5QrcodeScanner.stop().then(() => {
-                    document.getElementById('camera-modal').style.display = 'none';
-                }).catch(() => {
-                    document.getElementById('camera-modal').style.display = 'none';
-                });
+                html5QrcodeScanner.stop().then(() => { document.getElementById('camera-modal').style.display = 'none'; });
             } else {
                 document.getElementById('camera-modal').style.display = 'none';
             }
         }
 
-        // QRコード読み込み成功時
+        function startGachaViaButton() {
+            checkAndResetDailyGacha();
+            if (dailyGachaStorage.count <= 0) {
+                alert("本日のガチャ回数がなくなりました。コードを入力するか明日まで待ってね！");
+                return;
+            }
+            triggerGachaCore();
+        }
+
         function onScanSuccess(decodedText) {
             closeCamera();
-            const foundCard = cardsData.find(card => decodedText.trim() === card.id);
+            const cleanedText = decodedText.trim();
             
+            if (cleanedText === 'gacha-3') {
+                checkAndResetDailyGacha();
+                if (dailyGachaStorage.count <= 0) {
+                    alert("本日のガチャ回数がなくなりました。コードを入力するか明日まで待ってね！");
+                    return;
+                }
+                triggerGachaCore();
+                return;
+            }
+
+            const foundCard = cardsData.find(card => cleanedText === card.id);
             if (foundCard) {
                 if (unlockedCards.includes(foundCard.id)) {
                     alert(`No.${foundCard.no} のカードはすでに持っています！`);
                     return;
                 }
+                gachaSession.isGachaMode = false;
+                currentSingleCard = foundCard;
+                document.getElementById('quizTitle').innerText = "日本語の意味を書きなさい。";
+                document.getElementById('quizSubmitBtn').innerText = "解答する";
                 showQuiz(foundCard);
             } else {
                 alert("これは有効なトレカのQRコードではありません。");
             }
         }
 
-        // クイズを表示
+        function triggerGachaCore() {
+            let lockedCards = cardsData.filter(card => !unlockedCards.includes(card.id));
+            if (lockedCards.length === 0) {
+                alert("すべてのカードをコンプリートしているため、ガチャを引く必要はありません！");
+                return;
+            }
+            const randomCard = lockedCards[Math.floor(Math.random() * lockedCards.length)];
+            gachaSession.isGachaMode = true;
+            gachaSession.selectedCard = randomCard;
+            gachaSession.userAnswer = "";
+            document.getElementById('quizTitle').innerText = "🔥 ガチャクイズチャレンジ";
+            document.getElementById('quizSubmitBtn').innerText = "結果を見る！";
+            showQuiz(randomCard);
+        }
+
+        function jumpToCardTab(cardNo) {
+            currentTabId = Math.floor((cardNo - 1) / CARDS_PER_PAGE);
+            renderTabs();
+        }
+
         function showQuiz(card) {
-            currentScanningCard = card;
-            document.getElementById('quizMeaning').innerText = card.quiz.meaning;
+            document.getElementById('quizEnglish').innerText = card.quiz.answer;
             document.getElementById('answerInput').value = ''; 
             document.getElementById('quiz-overlay').style.display = 'flex';
-            
             setTimeout(() => { document.getElementById('answerInput').focus(); }, 100);
         }
 
         function closeQuiz() {
             document.getElementById('quiz-overlay').style.display = 'none';
-            currentScanningCard = null;
+            gachaSession.isGachaMode = false;
         }
 
-        // 記述式の正誤判定
-        function checkAnswer() {
+        function cleanText(str) {
+            if (!str) return "";
+            let text = str.toLowerCase().trim();
+            text = text.replace(/[!.,?|、。！＿_-]/g, "");
+            text = text.replace(/[\u30a1-\u30f6]/g, function(match) {
+                const chr = match.charCodeAt(0) - 0x60;
+                return String.fromCharCode(chr);
+            });
+            return text;
+        }
+
+        function validateAnswer(userInput, allowedAnswersString) {
+            const user = cleanText(userInput);
+            const answersArray = allowedAnswersString.split("/");
+            return answersArray.some(ans => cleanText(ans) === user);
+        }
+
+        function submitAnswer() {
             const userInput = document.getElementById('answerInput').value;
-            const card = currentScanningCard;
+            document.getElementById('quiz-overlay').style.display = 'none';
 
-            const formatString = (str) => str.toLowerCase().trim().replace(/[!.,]/g, '');
-
-            if (formatString(userInput) === formatString(card.quiz.answer)) {
-                document.getElementById('quiz-overlay').style.display = 'none';
-                alert("正解！カードをゲットしたよ！");
-                unlockCard(card);
+            if (gachaSession.isGachaMode) {
+                dailyGachaStorage.count = Math.max(0, dailyGachaStorage.count - 1);
+                localStorage.setItem('dailyGachaStorage', JSON.stringify(dailyGachaStorage));
+                checkAndResetDailyGacha();
+                evaluateAndShowGachaResult(userInput);
             } else {
-                alert("ちがうよ！もう一度よく考えてみてね。");
-                document.getElementById('answerInput').value = '';
-                document.getElementById('answerInput').focus();
+                if (validateAnswer(userInput, currentSingleCard.quiz.meaning)) {
+                    alert("正解！カードをゲットしたよ！");
+                    jumpToCardTab(currentSingleCard.no); 
+                    startSingleGet(currentSingleCard);
+                } else {
+                    const primaryAns = currentSingleCard.quiz.meaning.split("/")[0];
+                    alert(`残念！正解は「${primaryAns}」などでした。また挑戦してね！`);
+                }
+                currentSingleCard = null;
             }
         }
 
-        document.getElementById('answerInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') { checkAnswer(); }
-        });
+        function evaluateAndShowGachaResult(userInput) {
+            const container = document.getElementById('gachaContainer');
+            container.innerHTML = ''; 
+            document.getElementById('gachaCloseBtn').style.display = 'none'; 
+            document.getElementById('gacha-overlay').style.display = 'flex';
 
-        // カード解禁＆アニメーション処理
-        function unlockCard(card) {
-            unlockedCards.push(card.id);
+            const card = gachaSession.selectedCard;
+            const isCorrect = validateAnswer(userInput, card.quiz.meaning);
+            
+            const gachaCardEl = document.createElement('div');
+            gachaCardEl.className = 'gacha-card';
+            gachaCardEl.id = 'gachaCard-0';
+
+            if (isCorrect) {
+                if (!unlockedCards.includes(card.id)) {
+                    unlockedCards.push(card.id);
+                }
+                gachaCardEl.innerHTML = `
+                    <div class="gacha-face gacha-back">？</div>
+                    <div class="gacha-face gacha-front">
+                        <img src="${card.img}">
+                        <div class="gacha-info">No.${card.no}</div>
+                    </div>
+                `;
+                document.getElementById('gachaResultTitle').innerText = "判定：正解！カード獲得";
+                jumpToCardTab(card.no); 
+            } else {
+                const primaryAns = card.quiz.meaning.split("/")[0];
+                gachaCardEl.innerHTML = `
+                    <div class="gacha-face gacha-back is-missed">✕<br><span style="font-size:14px; margin-top:10px; display:block;">ハズレ</span></div>
+                `;
+                document.getElementById('gachaResultTitle').innerText = `判定：不正解（正しい意味は: ${primaryAns}）`;
+            }
+            container.appendChild(gachaCardEl);
+
             localStorage.setItem('unlockedCards', JSON.stringify(unlockedCards));
 
-            const front = document.getElementById('animatedFront');
-            // 🆕 【修正】獲得時のアニメーション画面の文字も No.XX のみにスッキリさせました
-            front.innerHTML = `
-                <img src="${card.img}" loading="lazy">
-                <div style="margin-top:20px; font-weight:bold; text-align:center; width:100%;">
-                    <div style="font-size:20px; color:#333;">No.${card.no} ゲット！</div>
-                </div>
-            `;
+            if (isCorrect) {
+                setTimeout(() => {
+                    document.getElementById('gachaCard-0').classList.add('do-flip');
+                    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                }, 500);
+            }
 
-            const overlay = document.getElementById('get-animation-overlay');
-            const flipCard = document.getElementById('flipCard');
-            overlay.style.display = 'flex';
-            
-            setTimeout(() => {
-                flipCard.classList.add('do-flip');
-                confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
-            }, 300);
+            setTimeout(() => { document.getElementById('gachaCloseBtn').style.display = 'block'; }, 1200);
         }
 
-        // アニメーション画面を閉じる
-        function closeAnimation() {
-            document.getElementById('get-animation-overlay').style.display = 'none';
-            document.getElementById('flipCard').classList.remove('do-flip');
-            currentScanningCard = null;
+        function startSingleGet(card) {
+            const container = document.getElementById('gachaContainer');
+            container.innerHTML = '';
+            document.getElementById('gachaCloseBtn').style.display = 'none';
+            document.getElementById('gacha-overlay').style.display = 'flex';
+            document.getElementById('gachaResultTitle').innerText = "カード獲得！";
+
+            if (!unlockedCards.includes(card.id)) {
+                unlockedCards.push(card.id);
+                localStorage.setItem('unlockedCards', JSON.stringify(unlockedCards));
+            }
+
+            const gachaCardEl = document.createElement('div');
+            gachaCardEl.className = 'gacha-card';
+            gachaCardEl.id = 'gachaCard-0';
+            gachaCardEl.innerHTML = `
+                <div class="gacha-face gacha-back">？</div>
+                <div class="gacha-face gacha-front">
+                    <img src="${card.img}">
+                    <div class="gacha-info">No.${card.no}</div>
+                </div>
+            `;
+            container.appendChild(gachaCardEl);
+
+            setTimeout(() => {
+                document.getElementById('gachaCard-0').classList.add('do-flip');
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                document.getElementById('gachaCloseBtn').style.display = 'block';
+            }, 500);
+        }
+
+        function closeGacha() {
+            document.getElementById('gacha-overlay').style.display = 'none';
+            gachaSession.isGachaMode = false;
             renderCollection(); 
         }
 
-        // 初期描画
+        document.getElementById('answerInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') { submitAnswer(); }
+        });
+        document.getElementById('couponInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') { submitCoupon(); }
+        });
+
+        // 初期実行
+        renderTabs();
         renderCollection();
-    </script>
-</body>
+    </script></body>
 </html>
