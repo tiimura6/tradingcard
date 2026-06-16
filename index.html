@@ -6,15 +6,14 @@
     <title>ハイレベル英単語図鑑</title>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    
     <style>
         body {
             font-family: sans-serif;
-            background-color: #0f0a1c; 
-            background-image: url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1000&auto=format&fit=crop'); 
-            background-size: cover;          
-            background-position: center;     
-            background-attachment: fixed;     
+            background-color: #0f0a1c;
+            background-image: url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1000&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             margin: 0;
             padding: 20px;
             display: flex;
@@ -24,10 +23,9 @@
             box-sizing: border-box;
         }
 
-        /* 上部の文字を見やすくする半透明プレート */
         .header-plate {
-            background: rgba(253, 248, 237, 0.88); 
-            border: 2px solid #aa7c11; 
+            background: rgba(253, 248, 237, 0.88);
+            border: 2px solid #aa7c11;
             border-radius: 15px;
             padding: 15px 30px;
             text-align: center;
@@ -37,692 +35,788 @@
             max-width: 450px;
             box-sizing: border-box;
         }
-        
-        h1 { 
-            color: #3a220f; 
-            margin: 0 0 5px 0;
-            font-size: 24px; 
-            text-shadow: 1px 1px 0px rgba(255,255,255,0.8);
-        }
-        .counter { 
-            font-size: 18px; 
-            color: #5c3e21; 
-            margin: 0 0 12px 0; 
-            font-weight: bold;
-        }
-        
+        h1 { color: #3a220f; margin: 0 0 5px 0; font-size: 24px; text-shadow: 1px 1px 0px rgba(255,255,255,0.8); }
+        .counter { font-size: 18px; color: #5c3e21; margin: 0 0 10px 0; font-weight: bold; }
+
+        .header-info-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
         .gacha-limit-info {
-            font-size: 13px;
-            color: #fff;
-            font-weight: bold;
-            display: inline-block;
+            font-size: 13px; color: #fff; font-weight: bold; display: inline-block;
             background: linear-gradient(#801616, #610b0b);
-            padding: 5px 16px;
-            border-radius: 20px;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
-            border: 1px solid #4a0505;
+            padding: 5px 14px; border-radius: 20px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2); border: 1px solid #4a0505;
+        }
+        .streak-info {
+            font-size: 13px; color: #fff; font-weight: bold; display: inline-block;
+            background: linear-gradient(#e65100, #bf360c);
+            padding: 5px 14px; border-radius: 20px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2); border: 1px solid #7f2700;
+        }
+        .combo-display {
+            background: linear-gradient(90deg, #e65100, #bf360c);
+            color: #fff; font-size: 13px; font-weight: bold;
+            padding: 5px 18px; border-radius: 20px; margin-top: 8px;
+            box-shadow: 0 3px 8px rgba(230,81,0,0.4); border: 1px solid #7f2700;
+            display: none;
         }
 
-        /* 操作ボタンエリア */
-        .btn-group {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        
-        .scan-btn {
-            padding: 14px 24px;
-            font-size: 15px;
-            font-weight: bold;
-            background: linear-gradient(#aa7c11, #875e06);
-            color: #fff;
-            border: 1px solid #614303;
-            border-radius: 25px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.35);
-            transition: all 0.2s;
-        }
+        .btn-group { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
+        .scan-btn { padding: 14px 24px; font-size: 15px; font-weight: bold; background: linear-gradient(#aa7c11, #875e06); color: #fff; border: 1px solid #614303; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.35); transition: all 0.2s; }
         .scan-btn:hover { background: linear-gradient(#875e06, #614303); }
-
-        .gacha-btn {
-            padding: 14px 24px;
-            font-size: 15px;
-            font-weight: bold;
-            background: linear-gradient(#6200ea, #4a148c);
-            color: #fff;
-            border: 1px solid #311b92;
-            border-radius: 25px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.35);
-            transition: all 0.2s;
-        }
+        .gacha-btn { padding: 14px 24px; font-size: 15px; font-weight: bold; background: linear-gradient(#6200ea, #4a148c); color: #fff; border: 1px solid #311b92; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.35); transition: all 0.2s; }
         .gacha-btn:hover { background: linear-gradient(#4a148c, #311b92); }
-        .gacha-btn:disabled {
-            background: #5a5650;
-            border-color: #423f3a;
-            color: #a39f98;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-
-        .coupon-open-btn {
-            padding: 14px 24px;
-            font-size: 15px;
-            font-weight: bold;
-            background: linear-gradient(#00796b, #004d40);
-            color: #fff;
-            border: 1px solid #00332c;
-            border-radius: 25px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.35);
-            transition: all 0.2s;
-        }
+        .gacha-btn:disabled { background: #5a5650; border-color: #423f3a; color: #a39f98; cursor: not-allowed; box-shadow: none; }
+        .coupon-open-btn { padding: 14px 24px; font-size: 15px; font-weight: bold; background: linear-gradient(#00796b, #004d40); color: #fff; border: 1px solid #00332c; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.35); transition: all 0.2s; }
         .coupon-open-btn:hover { background: linear-gradient(#004d40, #00332c); }
 
-        /* 50枚区切りのタブ用スタイルエリア */
-        .tabs-container {
-            display: flex;
-            gap: 10px;
-            width: 100%;
-            max-width: 750px;
-            margin-bottom: 10px;
-            overflow-x: auto; 
-            padding-bottom: 5px;
-        }
-        .tab-button {
-            padding: 10px 20px;
-            font-size: 14px;
-            font-weight: bold;
-            background: rgba(253, 248, 237, 0.3);
-            color: #fff;
-            border: 2px solid rgba(253, 248, 237, 0.4);
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
-            backdrop-filter: blur(4px); 
-        }
-        .tab-button:hover { background: rgba(253, 248, 237, 0.5); }
-        .tab-button.active {
-            background: #fffdf9;
-            color: #3a220f;
-            border-color: #aa7c11;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            text-shadow: none;
-        }
+        .tabs-container { display: flex; gap: 10px; width: 100%; max-width: 750px; margin-bottom: 10px; overflow-x: auto; padding-bottom: 5px; }
+        .tab-button { padding: 10px 20px; font-size: 14px; font-weight: bold; background: rgba(253,248,237,0.3); color: #fff; border: 2px solid rgba(253,248,237,0.4); border-radius: 10px; cursor: pointer; transition: all 0.2s; text-shadow: 1px 1px 2px rgba(0,0,0,0.6); backdrop-filter: blur(4px); }
+        .tab-button:hover { background: rgba(253,248,237,0.5); }
+        .tab-button.active { background: #fffdf9; color: #3a220f; border-color: #aa7c11; box-shadow: 0 4px 10px rgba(0,0,0,0.3); text-shadow: none; }
 
-        /* コレクション全体のグリッド */
-        .collection-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(min(120px, 100%), 1fr));
-            gap: 15px;
-            width: 100%;
-            max-width: 750px; 
-        }
-        
-        @media (min-width: 600px) {
-            .collection-grid {
-                grid-template-columns: repeat(5, 1fr);
-            }
-        }
-
-        .card-container {
-            background: rgba(255, 254, 251, 0.95); 
-            border-radius: 12px;
-            padding: 8px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
+        .collection-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(120px, 100%), 1fr)); gap: 15px; width: 100%; max-width: 750px; }
+        @media (min-width: 600px) { .collection-grid { grid-template-columns: repeat(5, 1fr); } }
+        .card-container { background: rgba(255,254,251,0.95); border-radius: 12px; padding: 8px; box-shadow: 0 6px 15px rgba(0,0,0,0.3); text-align: center; cursor: pointer; transition: transform 0.2s; }
         .card-container:active { transform: scale(0.95); }
         .card-img { width: 100%; height: auto; border-radius: 8px; display: block; }
-        
-        .locked-placeholder {
-            width: 100%;
-            aspect-ratio: 2 / 3;
-            background: #2b253a; 
-            border-radius: 8px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #cca3ff;
-            font-size: 32px;
-            font-weight: bold;
-            box-shadow: inset 0 0 12px rgba(0,0,0,0.6);
-            border: 1px solid #473a63;
-        }
+        .locked-placeholder { width: 100%; aspect-ratio: 2 / 3; background: #2b253a; border-radius: 8px; display: flex; justify-content: center; align-items: center; color: #cca3ff; font-size: 32px; font-weight: bold; box-shadow: inset 0 0 12px rgba(0,0,0,0.6); border: 1px solid #473a63; }
         .card-info { margin-top: 8px; font-size: 14px; font-weight: bold; color: #332415; }
 
-        /* ポップアップ関連共通オーバーレイ */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 15;
-            justify-content: center;
-            align-items: center;
-        }
-        .custom-box {
-            background: #fffef7;
-            padding: 25px;
-            border-radius: 15px;
-            width: 85%;
-            max-width: 400px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            border: 2px solid #aa7c11;
-            box-sizing: border-box;
-        }
-        
-        .modal-input {
-            width: 100%; padding: 12px; font-size: 18px; border: 2px solid #cbd5e1; border-radius: 8px;
-            margin-bottom: 15px; text-align: center; outline: none; box-sizing: border-box;
-        }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 15; justify-content: center; align-items: center; }
+        .custom-box { background: #fffef7; padding: 25px; border-radius: 15px; width: 85%; max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.6); border: 2px solid #aa7c11; box-sizing: border-box; }
+        .modal-input { width: 100%; padding: 12px; font-size: 18px; border: 2px solid #cbd5e1; border-radius: 8px; margin-bottom: 15px; text-align: center; outline: none; box-sizing: border-box; }
         .modal-input:focus { border-color: #aa7c11; }
-        
-        .modal-btn {
-            width: 100%; padding: 12px; font-size: 16px; font-weight: bold;
-            background: #aa7c11; color: white; border: none; border-radius: 8px; cursor: pointer;
-        }
+        .modal-btn { width: 100%; padding: 12px; font-size: 16px; font-weight: bold; background: #aa7c11; color: white; border: none; border-radius: 8px; cursor: pointer; }
         .modal-btn:hover { background: #875e06; }
         .modal-cancel-btn { margin-top: 12px; background: none; border: none; color: #666; cursor: pointer; text-decoration: underline; font-size: 14px; }
 
-        /* カメラ専用 */
+        .quiz-english { font-size: 22px; font-weight: bold; color: #1a0050; padding: 10px; margin: 10px 0 15px 0; background: #f0ebff; border-radius: 8px; border: 1px solid #d0c0f0; }
+
         #camera-modal { background: rgba(0,0,0,0.85); z-index: 10; flex-direction: column; }
         #reader { width: 300px; background: white; border-radius: 8px; overflow: hidden; }
         .camera-close { margin-top: 15px; padding: 8px 16px; background: white; border: none; border-radius: 4px; cursor: pointer; }
 
-        /* ガチャ獲得画面 */
-        #gacha-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(10, 6, 18, 0.97); z-index: 20; flex-direction: column; justify-content: center; align-items: center;
-        }
-        .gacha-container {
-            display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; max-width: 90%; perspective: 1000px; margin-bottom: 30px;
-        }
+        #gacha-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10,6,18,0.97); z-index: 20; flex-direction: column; justify-content: center; align-items: center; }
+        .gacha-container { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; max-width: 90%; perspective: 1000px; margin-bottom: 30px; }
         .gacha-card { width: 140px; height: 240px; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
         .gacha-card.do-flip { transform: rotateY(180deg); }
-        .gacha-face {
-            position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 10px;
-            display: flex; flex-direction: column; justify-content: flex-start; align-items: center; background: #fffdf9; 
-            box-shadow: 0 4px 15px rgba(255,255,255,0.1); box-sizing: border-box; 
-        }
-        .gacha-back {
-            background: linear-gradient(135deg, #733b10, #3d1c03); color: #edd9b4; font-size: 36px; font-weight: bold; border: 3px solid #aa7c11; justify-content: center; 
-        }
+        .gacha-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 10px; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; background: #fffdf9; box-shadow: 0 4px 15px rgba(255,255,255,0.1); box-sizing: border-box; }
+        .gacha-back { background: linear-gradient(135deg, #733b10, #3d1c03); color: #edd9b4; font-size: 36px; font-weight: bold; border: 3px solid #aa7c11; justify-content: center; }
         .gacha-back.is-missed { background: linear-gradient(135deg, #3a3a3a, #151515); color: #666; border-color: #444; font-size: 28px; }
         .gacha-front { transform: rotateY(180deg); padding: 5px; border: 3px solid #aa7c11; border-radius: 10px; }
-        .gacha-front img { width: 100%; max-height: 75%; object-fit: contain; border-radius: 5px; }
-        .gacha-info { margin-top: 10px; font-size: 14px; font-weight: bold; text-align: center; color: #332415; }
-        .gacha-close-btn {
-            display: none; padding: 12px 40px; font-size: 18px; font-weight: bold; background: #aa7c11; color: white;
-            border: none; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 15px rgba(170,124,17,0.4);
-        }
+        .gacha-front img { width: 100%; max-height: 65%; object-fit: contain; border-radius: 5px; }
+        .gacha-info { margin-top: 4px; font-size: 13px; font-weight: bold; text-align: center; color: #332415; }
+        .gacha-close-btn { display: none; padding: 12px 40px; font-size: 18px; font-weight: bold; background: #aa7c11; color: white; border: none; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 15px rgba(170,124,17,0.4); }
 
-        /* 拡大表示 */
-        #zoom-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 30; justify-content: center; align-items: center;
-        }
-        .zoom-box {
-            position: relative; background: #fffdf9; padding: 15px; border-radius: 20px; width: 85%; max-width: 320px; text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6); animation: zoomIn 0.25s ease-out; border: 3px solid #aa7c11;
-        }
+        #zoom-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 30; justify-content: center; align-items: center; }
+        .zoom-box { position: relative; background: #fffdf9; padding: 15px; border-radius: 20px; width: 85%; max-width: 320px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.6); animation: zoomIn 0.25s ease-out; border: 3px solid #aa7c11; }
         .zoom-box img { width: 100%; height: auto; border-radius: 12px; }
         .zoom-info { margin-top: 12px; font-size: 18px; font-weight: bold; color: #332415; }
-        .zoom-close-btn {
-            position: absolute; top: -15px; right: -15px; width: 36px; height: 36px; background: #c94c4c; color: white;
-            border: 2px solid white; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        }
+        .zoom-close-btn { position: absolute; top: -15px; right: -15px; width: 36px; height: 36px; background: #c94c4c; color: white; border: 2px solid white; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
         @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* ========== RARITY SYSTEM ========== */
+        @keyframes rainbow-border {
+            0%   { border-color: #ff4444; box-shadow: 0 0 18px #ff444499; }
+            16%  { border-color: #ff8800; box-shadow: 0 0 18px #ff880099; }
+            33%  { border-color: #ffcc00; box-shadow: 0 0 18px #ffcc0099; }
+            50%  { border-color: #44cc44; box-shadow: 0 0 18px #44cc4499; }
+            66%  { border-color: #4488ff; box-shadow: 0 0 18px #4488ff99; }
+            83%  { border-color: #aa44ff; box-shadow: 0 0 18px #aa44ff99; }
+            100% { border-color: #ff4444; box-shadow: 0 0 18px #ff444499; }
+        }
+        @keyframes ur-shimmer {
+            0%, 100% { background: #9f6700; }
+            50%       { background: #c98200; }
+        }
+
+        .rarity-badge {
+            position: absolute; top: 3px; right: 3px;
+            font-size: 9px; font-weight: bold; padding: 2px 5px;
+            border-radius: 3px; color: #fff; line-height: 1; pointer-events: none;
+        }
+        .rarity-badge-N  { background: #666; }
+        .rarity-badge-R  { background: #1565c0; }
+        .rarity-badge-SR { background: #6a1b9a; box-shadow: 0 0 5px #8e24aaaa; }
+        .rarity-badge-UR { background: #9f6700; border: 1px solid #ffd700; color: #fff3c0; animation: ur-shimmer 2s ease-in-out infinite; }
+
+        .gacha-back.rarity-N  { background: linear-gradient(135deg, #3a3a3a, #1a1a1a); color: #aaa; border-color: #555; }
+        .gacha-back.rarity-R  { background: linear-gradient(135deg, #0d47a1, #082870); color: #90caf9; border-color: #1e88e5; box-shadow: 0 0 20px #1e88e544; }
+        .gacha-back.rarity-SR { background: linear-gradient(135deg, #4a0082, #1a0040); color: #e1bee7; border-color: #8e24aa; box-shadow: 0 0 25px #8e24aa66; }
+        .gacha-back.rarity-UR { background: linear-gradient(135deg, #7f4f00, #3d2000); color: #ffe082; border-color: #ffd700; animation: rainbow-border 1.5s linear infinite; }
+
+        .gacha-front.rarity-front-N  { border-color: #aa7c11; }
+        .gacha-front.rarity-front-R  { border-color: #1e88e5; box-shadow: 0 0 12px #1e88e5aa; }
+        .gacha-front.rarity-front-SR { border-color: #8e24aa; box-shadow: 0 0 18px #8e24aaaa, 0 0 40px #ce93d844; }
+        .gacha-front.rarity-front-UR { animation: rainbow-border 1.5s linear infinite; border-width: 4px; }
+
+        .gacha-rarity-badge {
+            font-size: 11px; font-weight: bold; padding: 3px 12px; border-radius: 8px;
+            color: #fff; margin: 5px 0 2px 0; display: inline-block;
+        }
+        .gacha-rarity-badge-N  { background: #555; }
+        .gacha-rarity-badge-R  { background: #1565c0; }
+        .gacha-rarity-badge-SR { background: #6a1b9a; box-shadow: 0 0 8px #8e24aaaa; }
+        .gacha-rarity-badge-UR { background: #9f6700; border: 1px solid #ffd700; color: #fff3c0; animation: ur-shimmer 1.5s ease-in-out infinite; }
+
+        /* ========== COMBO SYSTEM ========== */
+        @keyframes comboPulse { 0% { transform: scale(1); } 50% { transform: scale(1.07); } 100% { transform: scale(1); } }
+        .combo-pulse { animation: comboPulse 0.35s ease-out; }
+
+        @keyframes slideUp {
+            from { transform: translateX(-50%) translateY(20px); opacity: 0; }
+            to   { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+        .combo-bonus-notice {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: linear-gradient(135deg, #e65100, #ff8f00);
+            color: #fff; padding: 13px 30px; border-radius: 14px;
+            font-size: 15px; font-weight: bold; text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5); z-index: 50;
+            display: none; border: 1px solid #ffb300; white-space: nowrap;
+        }
+
+        /* ========== STREAK BONUS MODAL ========== */
+        .streak-bonus-icon { font-size: 52px; margin: 5px 0 8px; display: block; }
+        .streak-day-label { font-size: 32px; font-weight: bold; color: #e65100; margin: 0 0 6px 0; }
+        .streak-bonus-msg { font-size: 19px; font-weight: bold; color: #333; margin: 0 0 5px 0; }
+        .streak-bonus-sub { font-size: 13px; color: #777; margin: 0 0 18px 0; }
     </style>
 </head>
-<body><div class="header-plate"><h1>ハイレベル英単語図鑑</h1><div class="counter" id="collectionCounter">0 / 50</div><div class="gacha-limit-info" id="gachaLimitInfo">本日のガチャ残り: 1回</div></div><div class="btn-group"><button class="scan-btn" onclick="openCamera()">QRコードをスキャン</button><button class="gacha-btn" id="directGachaBtn" onclick="startGachaViaButton()">デイリーガチャを引く</button><button class="coupon-open-btn" onclick="openCouponModal()">クーポン入力</button></div><div class="tabs-container" id="tabsContainer"></div><div id="camera-modal" class="modal-overlay"><div id="reader"></div><button class="camera-close" onclick="closeCamera()">閉じる</button></div><div id="coupon-overlay" class="modal-overlay"><div class="custom-box"><h3>🎫 クーポンコード入力</h3><p style="font-size: 13px; color: #555; margin: 0 0 15px 0;">コードを入力すると、ガチャを引ける回数が増えます！</p><input type="text" id="couponInput" class="modal-input" placeholder="コードを入力" autocomplete="off"><button class="modal-btn" style="background:#00796b;" onclick="submitCoupon()">コードを適用する</button><br><button class="modal-cancel-btn" onclick="closeCouponModal()">閉じる</button></div></div><div id="quiz-overlay" class="modal-overlay"><div class="custom-box"><h3 style="margin:0; color:#524130;" id="quizTitle">日本語の意味を書きなさい。</h3><div class="quiz-english" id="quizEnglish">Hello!</div><input type="text" id="answerInput" class="modal-input" placeholder="日本語の意味を入力" autocomplete="off"><button class="modal-btn" id="quizSubmitBtn" onclick="submitAnswer()">解答する</button><br><button class="modal-cancel-btn" onclick="closeQuiz()">やめる</button></div></div><div id="gacha-overlay"><h2 id="gachaResultTitle" style="color: #fff; margin-bottom: 30px; text-shadow: 0 0 10px rgba(255,255,255,0.5);">結果発表！</h2><div class="gacha-container" id="gachaContainer"></div><button class="gacha-close-btn" id="gachaCloseBtn" onclick="closeGacha()">結果を確認して戻る</button></div><div id="zoom-overlay" onclick="closeZoom()"><div class="zoom-box" onclick="event.stopPropagation()"><button class="zoom-close-btn" onclick="closeZoom()">✕</button><div id="zoomContent"></div></div></div><div class="collection-grid" id="collectionGrid"></div><script>
-        const TOTAL_CARDS = 50; 
-        const CARDS_PER_PAGE = 50; 
-        let currentTabId = 0; 
+<body>
 
-        const VALID_COUPONS = {
-            "MAGIC5": 5,
-            "BONUS3": 3,
-            "SUPER10": 10
-        };
+<div class="header-plate">
+    <h1>ハイレベル英単語図鑑</h1>
+    <div class="counter" id="collectionCounter">0 / 50</div>
+    <div class="header-info-row">
+        <div class="gacha-limit-info" id="gachaLimitInfo">本日のガチャ残り: 1回</div>
+        <div class="streak-info" id="streakInfo">🔥 0日連続</div>
+    </div>
+    <div class="combo-display" id="comboDisplay">
+        🔥 <span id="comboCount">0</span>連続正解中！
+    </div>
+</div>
 
-        const quizList = {
+<div class="btn-group">
+    <button class="scan-btn" onclick="openCamera()">QRコードをスキャン</button>
+    <button class="gacha-btn" id="directGachaBtn" onclick="startGachaViaButton()">デイリーガチャを引く</button>
+    <button class="coupon-open-btn" onclick="openCouponModal()">クーポン入力</button>
+</div>
 
-1: { meaning: "二重線/複線", answer: "a double line" },
-2: { meaning: "〜からはほど遠い/まったく違うもの/月とすっぽん", answer: "a far cry from" },
-3: { meaning: "職業/身分/社会階層/あらゆる歩み/人生の道のり", answer: "a walk of life" },
-4: { meaning: "〜を捨てる/あきらめる/見捨てる/〜を置き去りにする/（計画などを）中止する", answer: "abandon" },
-5: { meaning: "異常/異常性/変形/異常現象", answer: "abnormality" },
-6: { meaning: "〜を廃止する/（法律などを）なくす/撤廃する", answer: "abolish" },
-7: { meaning: "絶対的な/完全な/無条件の/決定的な", answer: "absolute" },
-8: { meaning: "〜を吸収する/夢中にさせる/（衝撃などを）和らげる/（知識を）吸い上げる", answer: "absorb" },
-9: { meaning: "豊富な/大量の/富んだ/満ちあふれた", answer: "abundant" },
-10: { meaning: "近づきやすい/利用しやすい/理解しやすい/（人柄が）気さくな/交通の便が良い", answer: "accessible" },
-11: { meaning: "達成/実績/才能/成果/教養/芸事", answer: "accomplishment" },
-12: { meaning: "〜を説明する/〜の割合を占める/〜の原因となる/〜の責任を負う/（行方などを）確認する", answer: "account for" },
-13: { meaning: "〜を達成する/成し遂げる/（目的を）果たす/得る", answer: "achieve" },
-14: { meaning: "達成/成就/業績/偉業/成果", answer: "achievement" },
-15: { meaning: "酸/酸性の/酸味のある/（言葉などが）痛烈な/辛辣な", answer: "acid" },
-16: { meaning: "〜を獲得する/身につける/（会社などを）買収する/手に入れる", answer: "acquire" },
-17: { meaning: "〜を適応させる/合わせる/慣れる/（小説などを）改変する/脚色する", answer: "adapt" },
-18: { meaning: "適応/順応/改作/脚色/翻案", answer: "adaptation" },
-19: { meaning: "〜を増やす/加える/〜を増大させる", answer: "add to" },
-20: { meaning: "これに加えて/さらに言えば/おまけに", answer: "add to this" },
-21: { meaning: "〜に話しかける/（問題に）取り組む/住所/演説/〜に宛名を書く", answer: "address" },
-22: { meaning: "〜を調整する/合わせる/慣れる/（姿勢などを）正す/（保険金を）査定する", answer: "adjust" },
-23: { meaning: "行政/管理/政府/経営/運営/政権/（薬の）投与", answer: "administration" },
-24: { meaning: "感嘆/賞賛/憧れ/賛美", answer: "admiration" },
-25: { meaning: "明らかに/誰もが認めるように/言いにくいが/確かに", answer: "admittedly" },
-26: { meaning: "〜を採用する/（養子に）迎える/（方針などを）選ぶ/（法案を）可決する", answer: "adopt" },
-27: { meaning: "採用/養子縁組/選定/可決", answer: "adoption" },
-28: { meaning: "〜を主張する/支持する/擁護者/代弁者/弁護士/〜を勧める", answer: "advocate" },
-29: { meaning: "〜に影響を与える/作用する/（病気が人・体を）冒す/〜の心を動かす/〜の振りをる", answer: "affect" },
-30: { meaning: "手頃な/購入しやすい/安価な/無理のない", answer: "affordable" },
-31: { meaning: "動揺した/興奮した/動転した/波立った", answer: "agitated" },
-32: { meaning: "農業の/農作の/農学の/土地の", answer: "agricultural" },
-33: { meaning: "警戒/用心深さ/機敏さ/覚醒（状態）", answer: "alertness" },
-34: { meaning: "同盟を結んだ/関連した/連合した/同類の", answer: "allied" },
-35: { meaning: "〜と並んで/〜と一緒に/〜のそばに/〜と同時に", answer: "alongside" },
-36: { meaning: "代わりの/選択肢/二者択一の/オルタナティブな/既存のものに代わる", answer: "alternative" },
-37: { meaning: "アルミニウムの/アルミ製の", answer: "aluminum" },
-38: { meaning: "素人くさい/下手な/未熟な/アマチュアらしい", answer: "amateurish" },
-39: { meaning: "アミノ酸", answer: "amino acid" },
-40: { meaning: "〜を楽しませる/面白がらせる/（時間を）つぶさせる", answer: "amuse" },
-41: { meaning: "釣り人/（特に）竿釣り師", answer: "angler" },
-42: { meaning: "苦痛/苦悩/悲痛/激痛/悶え", answer: "anguish" },
-43: { meaning: "動物行動学者/動物行動主義者", answer: "animal behaviorist" },
-44: { meaning: "抗菌の/防腐の/抗菌剤/抗菌ペプチド", answer: "antibacterial" },
-45: { meaning: "期待/予想/先取り/楽しみにして待つこと/予期", answer: "anticipation" },
-46: { meaning: "明白な/一見〜らしい/見かけ上の/表面的な", answer: "apparent" },
-47: { meaning: "〜を求める/〜に訴えかける/〜を懇願する/〜を要請する", answer: "appeal for" },
-48: { meaning: "応募者/志願者/申請者/受験生", answer: "applicant" },
-49: { meaning: "〜に適用される/〜に当てはまる/〜に申し込む/〜に宛てる/〜に塗る", answer: "apply to" },
-50: { meaning: "適切な/ふさわしい/固有の/〜に特有の/〜を私物化する/〜を予算に計上する", answer: "appropriate" },
-        };
+<div class="tabs-container" id="tabsContainer"></div>
 
-        const cardsData = [];
-        for (let i = 1; i <= TOTAL_CARDS; i++) {
-            const quiz = quizList[i] || { meaning: `日本語の意味 ${i}`, answer: `English ${i}` };
-            cardsData.push({ id: `card-${i}`, img: `photo/${i}.png`, no: i, quiz: quiz });
-        }
+<div id="camera-modal" class="modal-overlay">
+    <div id="reader"></div>
+    <button class="camera-close" onclick="closeCamera()">閉じる</button>
+</div>
 
-        let unlockedCards = JSON.parse(localStorage.getItem('unlockedCards')) || [];
-        let html5QrcodeScanner = null;
-        let currentSingleCard = null; 
+<div id="coupon-overlay" class="modal-overlay">
+    <div class="custom-box">
+        <h3>🎫 クーポンコード入力</h3>
+        <p style="font-size:13px;color:#555;margin:0 0 15px 0;">コードを入力すると、ガチャを引ける回数が増えます！</p>
+        <input type="text" id="couponInput" class="modal-input" placeholder="コードを入力" autocomplete="off">
+        <button class="modal-btn" style="background:#00796b;" onclick="submitCoupon()">コードを適用する</button><br>
+        <button class="modal-cancel-btn" onclick="closeCouponModal()">閉じる</button>
+    </div>
+</div>
 
-        let gachaSession = {
-            isGachaMode: false,
-            selectedCard: null,  
-            userAnswer: ""
-        };
+<div id="quiz-overlay" class="modal-overlay">
+    <div class="custom-box">
+        <h3 style="margin:0;color:#524130;" id="quizTitle">日本語の意味を書きなさい。</h3>
+        <div class="quiz-english" id="quizEnglish">Hello!</div>
+        <input type="text" id="answerInput" class="modal-input" placeholder="日本語の意味を入力" autocomplete="off">
+        <button class="modal-btn" id="quizSubmitBtn" onclick="submitAnswer()">解答する</button><br>
+        <button class="modal-cancel-btn" onclick="closeQuiz()">やめる</button>
+    </div>
+</div>
 
-        let dailyGachaStorage = JSON.parse(localStorage.getItem('dailyGachaStorage')) || { 
-            lastDate: "", 
-            count: 1,
-            usedCoupons: [] 
-        };
-        if (!dailyGachaStorage.usedCoupons) {
-            dailyGachaStorage.usedCoupons = [];
-        }
+<div id="streak-bonus-overlay" class="modal-overlay">
+    <div class="custom-box">
+        <span class="streak-bonus-icon">🔥</span>
+        <p class="streak-day-label" id="streakDayLabel"></p>
+        <p class="streak-bonus-msg" id="streakBonusMsg"></p>
+        <p class="streak-bonus-sub">ガチャ残り回数に追加されました！</p>
+        <button class="modal-btn" style="background:linear-gradient(#e65100, #bf360c);" onclick="closeStreakBonusModal()">やった！</button>
+    </div>
+</div>
 
-        function checkAndResetDailyGacha() {
-            const todayStr = new Date().toLocaleDateString();
-            if (dailyGachaStorage.lastDate !== todayStr) {
-                dailyGachaStorage.lastDate = todayStr;
-                dailyGachaStorage.count = 1; 
-                localStorage.setItem('dailyGachaStorage', JSON.stringify(dailyGachaStorage));
-            }
-            const remainingCount = dailyGachaStorage.count;
-            document.getElementById('gachaLimitInfo').innerText = remainingCount > 0 
-                ? `本日のガチャ残り: ${remainingCount}回` 
-                : `本日のガチャ残り: 0回 (次回は明日)`;
-            document.getElementById('directGachaBtn').disabled = (remainingCount <= 0);
-        }
+<div id="gacha-overlay">
+    <h2 id="gachaResultTitle" style="color:#fff;margin-bottom:30px;text-shadow:0 0 10px rgba(255,255,255,0.5);">結果発表！</h2>
+    <div class="gacha-container" id="gachaContainer"></div>
+    <button class="gacha-close-btn" id="gachaCloseBtn" onclick="closeGacha()">結果を確認して戻る</button>
+</div>
 
-        function openCouponModal() {
-            document.getElementById('couponInput').value = '';
-            document.getElementById('coupon-overlay').style.display = 'flex';
-            setTimeout(() => { document.getElementById('couponInput').focus(); }, 100);
-        }
+<div id="zoom-overlay" onclick="closeZoom()">
+    <div class="zoom-box" onclick="event.stopPropagation()">
+        <button class="zoom-close-btn" onclick="closeZoom()">✕</button>
+        <div id="zoomContent"></div>
+    </div>
+</div>
 
-        function closeCouponModal() {
-            document.getElementById('coupon-overlay').style.display = 'none';
-        }
+<div class="combo-bonus-notice" id="comboBonusNotice"></div>
 
-        function submitCoupon() {
-            const inputCode = document.getElementById('couponInput').value.trim().toUpperCase(); 
-            
-            if (inputCode === "") {
-                alert("コードを入力してください。");
-                return;
-            }
+<div class="collection-grid" id="collectionGrid"></div>
 
-            if (!(inputCode in VALID_COUPONS)) {
-                alert("無効なクーポンコードです。正しいコードを入力してください。");
-                return;
-            }
+<script>
+    /* ========== CONSTANTS ========== */
+    const TOTAL_CARDS = 50;
+    const CARDS_PER_PAGE = 50;
+    let currentTabId = 0;
 
-            if (dailyGachaStorage.usedCoupons.includes(inputCode)) {
-                alert("このクーポンコードはすでに使用されています。");
-                return;
-            }
+    const VALID_COUPONS = { "MAGIC5": 5, "BONUS3": 3, "SUPER10": 10 };
 
-            const rewardCount = VALID_COUPONS[inputCode];
-            dailyGachaStorage.count += rewardCount; 
-            dailyGachaStorage.usedCoupons.push(inputCode); 
+    /* ========== RARITY SYSTEM ========== */
+    const UR_CARDS = [10, 25, 40];
+    const SR_CARDS = [5, 15, 20, 30, 35, 45, 50];
+    const R_CARDS  = [2, 6, 8, 12, 16, 18, 22, 26, 28, 32, 36, 38, 42, 46, 48];
+
+    function getRarity(no) {
+        if (UR_CARDS.includes(no)) return 'UR';
+        if (SR_CARDS.includes(no)) return 'SR';
+        if (R_CARDS.includes(no))  return 'R';
+        return 'N';
+    }
+
+    const RARITY_CONFIG = {
+        'N':  { label: 'N',  backClass: 'rarity-N',  frontClass: 'rarity-front-N',  emoji: '',    resultTitle: 'カード獲得！' },
+        'R':  { label: 'R',  backClass: 'rarity-R',  frontClass: 'rarity-front-R',  emoji: '💠',  resultTitle: 'Rカード獲得！' },
+        'SR': { label: 'SR', backClass: 'rarity-SR', frontClass: 'rarity-front-SR', emoji: '✨',  resultTitle: 'SRカード獲得！！' },
+        'UR': { label: 'UR', backClass: 'rarity-UR', frontClass: 'rarity-front-UR', emoji: '🌟', resultTitle: '⚡ URカード獲得！！！' }
+    };
+
+    /* ========== QUIZ DATA ========== */
+    const quizList = {
+        1:  { meaning: "二重線/複線",                                                                                    answer: "a double line" },
+        2:  { meaning: "〜からはほど遠い/まったく違うもの/月とすっぽん",                                               answer: "a far cry from" },
+        3:  { meaning: "職業/身分/社会階層/あらゆる歩み/人生の道のり",                                                  answer: "a walk of life" },
+        4:  { meaning: "〜を捨てる/あきらめる/見捨てる/〜を置き去りにする/（計画などを）中止する",                     answer: "abandon" },
+        5:  { meaning: "異常/異常性/変形/異常現象",                                                                      answer: "abnormality" },
+        6:  { meaning: "〜を廃止する/（法律などを）なくす/撤廃する",                                                    answer: "abolish" },
+        7:  { meaning: "絶対的な/完全な/無条件の/決定的な",                                                              answer: "absolute" },
+        8:  { meaning: "〜を吸収する/夢中にさせる/（衝撃などを）和らげる/（知識を）吸い上げる",                        answer: "absorb" },
+        9:  { meaning: "豊富な/大量の/富んだ/満ちあふれた",                                                              answer: "abundant" },
+        10: { meaning: "近づきやすい/利用しやすい/理解しやすい/（人柄が）気さくな/交通の便が良い",                     answer: "accessible" },
+        11: { meaning: "達成/実績/才能/成果/教養/芸事",                                                                  answer: "accomplishment" },
+        12: { meaning: "〜を説明する/〜の割合を占める/〜の原因となる/〜の責任を負う/（行方などを）確認する",           answer: "account for" },
+        13: { meaning: "〜を達成する/成し遂げる/（目的を）果たす/得る",                                                  answer: "achieve" },
+        14: { meaning: "達成/成就/業績/偉業/成果",                                                                       answer: "achievement" },
+        15: { meaning: "酸/酸性の/酸味のある/（言葉などが）痛烈な/辛辣な",                                             answer: "acid" },
+        16: { meaning: "〜を獲得する/身につける/（会社などを）買収する/手に入れる",                                     answer: "acquire" },
+        17: { meaning: "〜を適応させる/合わせる/慣れる/（小説などを）改変する/脚色する",                               answer: "adapt" },
+        18: { meaning: "適応/順応/改作/脚色/翻案",                                                                       answer: "adaptation" },
+        19: { meaning: "〜を増やす/加える/〜を増大させる",                                                               answer: "add to" },
+        20: { meaning: "これに加えて/さらに言えば/おまけに",                                                             answer: "add to this" },
+        21: { meaning: "〜に話しかける/（問題に）取り組む/住所/演説/〜に宛名を書く",                                   answer: "address" },
+        22: { meaning: "〜を調整する/合わせる/慣れる/（姿勢などを）正す/（保険金を）査定する",                        answer: "adjust" },
+        23: { meaning: "行政/管理/政府/経営/運営/政権/（薬の）投与",                                                    answer: "administration" },
+        24: { meaning: "感嘆/賞賛/憧れ/賛美",                                                                            answer: "admiration" },
+        25: { meaning: "明らかに/誰もが認めるように/言いにくいが/確かに",                                               answer: "admittedly" },
+        26: { meaning: "〜を採用する/（養子に）迎える/（方針などを）選ぶ/（法案を）可決する",                         answer: "adopt" },
+        27: { meaning: "採用/養子縁組/選定/可決",                                                                        answer: "adoption" },
+        28: { meaning: "〜を主張する/支持する/擁護者/代弁者/弁護士/〜を勧める",                                        answer: "advocate" },
+        29: { meaning: "〜に影響を与える/作用する/（病気が人・体を）冒す/〜の心を動かす/〜の振りをる",               answer: "affect" },
+        30: { meaning: "手頃な/購入しやすい/安価な/無理のない",                                                          answer: "affordable" },
+        31: { meaning: "動揺した/興奮した/動転した/波立った",                                                            answer: "agitated" },
+        32: { meaning: "農業の/農作の/農学の/土地の",                                                                    answer: "agricultural" },
+        33: { meaning: "警戒/用心深さ/機敏さ/覚醒（状態）",                                                             answer: "alertness" },
+        34: { meaning: "同盟を結んだ/関連した/連合した/同類の",                                                          answer: "allied" },
+        35: { meaning: "〜と並んで/〜と一緒に/〜のそばに/〜と同時に",                                                   answer: "alongside" },
+        36: { meaning: "代わりの/選択肢/二者択一の/オルタナティブな/既存のものに代わる",                               answer: "alternative" },
+        37: { meaning: "アルミニウムの/アルミ製の",                                                                      answer: "aluminum" },
+        38: { meaning: "素人くさい/下手な/未熟な/アマチュアらしい",                                                     answer: "amateurish" },
+        39: { meaning: "アミノ酸",                                                                                       answer: "amino acid" },
+        40: { meaning: "〜を楽しませる/面白がらせる/（時間を）つぶさせる",                                              answer: "amuse" },
+        41: { meaning: "釣り人/（特に）竿釣り師",                                                                        answer: "angler" },
+        42: { meaning: "苦痛/苦悩/悲痛/激痛/悶え",                                                                      answer: "anguish" },
+        43: { meaning: "動物行動学者/動物行動主義者",                                                                    answer: "animal behaviorist" },
+        44: { meaning: "抗菌の/防腐の/抗菌剤/抗菌ペプチド",                                                             answer: "antibacterial" },
+        45: { meaning: "期待/予想/先取り/楽しみにして待つこと/予期",                                                    answer: "anticipation" },
+        46: { meaning: "明白な/一見〜らしい/見かけ上の/表面的な",                                                       answer: "apparent" },
+        47: { meaning: "〜を求める/〜に訴えかける/〜を懇願する/〜を要請する",                                           answer: "appeal for" },
+        48: { meaning: "応募者/志願者/申請者/受験生",                                                                    answer: "applicant" },
+        49: { meaning: "〜に適用される/〜に当てはまる/〜に申し込む/〜に宛てる/〜に塗る",                              answer: "apply to" },
+        50: { meaning: "適切な/ふさわしい/固有の/〜に特有の/〜を私物化する/〜を予算に計上する",                       answer: "appropriate" }
+    };
+
+    /* ========== CARD DATA ========== */
+    const cardsData = [];
+    for (let i = 1; i <= TOTAL_CARDS; i++) {
+        const quiz = quizList[i] || { meaning: `意味 ${i}`, answer: `Word ${i}` };
+        cardsData.push({ id: `card-${i}`, img: `photo/${i}.png`, no: i, quiz: quiz });
+    }
+
+    /* ========== STATE ========== */
+    let unlockedCards = JSON.parse(localStorage.getItem('unlockedCards')) || [];
+    let html5QrcodeScanner = null;
+    let currentSingleCard = null;
+
+    let gachaSession = { isGachaMode: false, selectedCard: null, userAnswer: "" };
+
+    let dailyGachaStorage = JSON.parse(localStorage.getItem('dailyGachaStorage')) || {
+        lastDate: "", count: 1, usedCoupons: []
+    };
+    if (!dailyGachaStorage.usedCoupons) dailyGachaStorage.usedCoupons = [];
+
+    /* ========== LOGIN STREAK STATE ========== */
+    let loginStreak = JSON.parse(localStorage.getItem('loginStreak')) || {
+        lastDate: "", streak: 0, bonusClaimed: false
+    };
+
+    /* ========== COMBO STATE ========== */
+    let comboCount = 0;
+
+    /* ========== DAILY GACHA RESET ========== */
+    function checkAndResetDailyGacha() {
+        const todayStr = new Date().toLocaleDateString();
+        if (dailyGachaStorage.lastDate !== todayStr) {
+            dailyGachaStorage.lastDate = todayStr;
+            dailyGachaStorage.count = 1;
             localStorage.setItem('dailyGachaStorage', JSON.stringify(dailyGachaStorage));
+        }
+        const remaining = dailyGachaStorage.count;
+        document.getElementById('gachaLimitInfo').innerText = remaining > 0
+            ? `本日のガチャ残り: ${remaining}回`
+            : `本日のガチャ残り: 0回 (次回は明日)`;
+        document.getElementById('directGachaBtn').disabled = (remaining <= 0);
+    }
 
-            closeCouponModal();
-            checkAndResetDailyGacha(); 
+    /* ========== LOGIN STREAK LOGIC ========== */
+    function checkLoginStreak() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const todayStr = today.toLocaleDateString('ja-JP');
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = yesterday.toLocaleDateString('ja-JP');
 
-            confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 } });
-            alert("クーポン適用成功！🎉");
+        if (loginStreak.lastDate === todayStr) {
+            updateStreakDisplay();
+            return;
         }
 
-        function renderTabs() {
-            const tabsContainer = document.getElementById('tabsContainer');
-            tabsContainer.innerHTML = '';
-            
-            const totalTabs = Math.ceil(TOTAL_CARDS / CARDS_PER_PAGE);
-            if (totalTabs <= 1) return;
+        if (loginStreak.lastDate === yesterdayStr) {
+            loginStreak.streak++;
+        } else {
+            loginStreak.streak = 1;
+        }
+        loginStreak.lastDate = todayStr;
+        loginStreak.bonusClaimed = false;
+        localStorage.setItem('loginStreak', JSON.stringify(loginStreak));
 
-            for (let i = 0; i < totalTabs; i++) {
-                const startNo = (i * CARDS_PER_PAGE) + 1;
-                const endNo = Math.min((i + 1) * CARDS_PER_PAGE, TOTAL_CARDS); 
-                
-                const btn = document.createElement('button');
-                btn.className = `tab-button ${i === currentTabId ? 'active' : ''}`;
-                btn.innerText = `${startNo} 〜 ${endNo}`;
-                
-                btn.onclick = () => {
-                    currentTabId = i;
-                    renderTabs(); 
-                    renderCollection(); 
-                };
-                tabsContainer.appendChild(btn);
-            }
+        const bonus = getStreakBonus(loginStreak.streak);
+        if (bonus > 0) {
+            dailyGachaStorage.count += bonus;
+            loginStreak.bonusClaimed = true;
+            localStorage.setItem('loginStreak', JSON.stringify(loginStreak));
+            localStorage.setItem('dailyGachaStorage', JSON.stringify(dailyGachaStorage));
         }
 
-        function renderCollection() {
-            checkAndResetDailyGacha();
-            document.getElementById('collectionCounter').innerText = `${unlockedCards.length} / ${TOTAL_CARDS}`;
-            const grid = document.getElementById('collectionGrid');
-            grid.innerHTML = '';
-            
-            const startIndex = currentTabId * CARDS_PER_PAGE;
-            const endIndex = startIndex + CARDS_PER_PAGE;
-            const currentFilteredCards = cardsData.slice(startIndex, endIndex);
+        updateStreakDisplay();
+        checkAndResetDailyGacha();
 
-            currentFilteredCards.forEach(card => {
-                const isUnlocked = unlockedCards.includes(card.id);
-                const cardEl = document.createElement('div');
-                cardEl.className = `card-container ${isUnlocked ? '' : 'locked'}`;
-                
-                cardEl.onclick = () => tapCard(card, isUnlocked);
-                
-                let cardVisualHTML = isUnlocked 
-                    ? `<img src="${card.img}" alt="No.${card.no}" class="card-img" loading="lazy">`
-                    : `<div class="locked-placeholder">？</div>`;
-                
-                cardEl.innerHTML = `
-                    ${cardVisualHTML}
-                    <div class="card-info"><div>No.${card.no}</div></div>
-                `;
-                grid.appendChild(cardEl);
-            });
+        if (bonus > 0) {
+            setTimeout(() => showStreakBonusModal(loginStreak.streak, bonus), 900);
         }
+    }
 
-        function tapCard(card, isUnlocked) {
-            if (!isUnlocked) return;
-            const zoomContent = document.getElementById('zoomContent');
-            zoomContent.innerHTML = `
-                <img src="${card.img}" alt="No.${card.no}">
-                <div class="zoom-info"><div>No.${card.no}</div></div>
-            `;
-            document.getElementById('zoom-overlay').style.display = 'flex';
-        }
+    function getStreakBonus(streak) {
+        if (streak % 7 === 0) return 3;
+        if (streak % 3 === 0) return 1;
+        return 0;
+    }
 
-        function closeZoom() { document.getElementById('zoom-overlay').style.display = 'none'; }
+    function updateStreakDisplay() {
+        const el = document.getElementById('streakInfo');
+        if (el) el.innerText = `🔥 ${loginStreak.streak}日連続`;
+    }
 
-        function openCamera() {
-            document.getElementById('camera-modal').style.display = 'flex';
-            html5QrcodeScanner = new Html5Qrcode("reader");
-            html5QrcodeScanner.start(
-                { facingMode: "environment" }, { fps: 10, qrbox: 250 }, onScanSuccess
-            ).catch(err => {
-                alert("カメラの起動に失敗しました。");
-                document.getElementById('camera-modal').style.display = 'none';
-            });
-        }
+    function showStreakBonusModal(streak, bonus) {
+        let dayLabel = `${streak}日連続ログイン！`;
+        if (streak % 30 === 0) dayLabel = `🏆 ${streak}日連続達成！`;
+        else if (streak % 14 === 0) dayLabel = `✨ 2週間連続達成！`;
+        else if (streak % 7  === 0) dayLabel = `🌟 1週間連続達成！`;
 
-        function closeCamera() {
-            if (html5QrcodeScanner) {
-                html5QrcodeScanner.stop().then(() => { document.getElementById('camera-modal').style.display = 'none'; });
-            } else {
-                document.getElementById('camera-modal').style.display = 'none';
-            }
-        }
+        document.getElementById('streakDayLabel').innerText = dayLabel;
+        document.getElementById('streakBonusMsg').innerText = `ガチャ ＋${bonus}回 ゲット！`;
+        document.getElementById('streak-bonus-overlay').style.display = 'flex';
+        confetti({ particleCount: 70, spread: 55, origin: { y: 0.7 } });
+    }
 
-        function startGachaViaButton() {
-            checkAndResetDailyGacha();
-            if (dailyGachaStorage.count <= 0) {
-                alert("本日のガチャ回数がなくなりました。コードを入力するか明日まで待ってね！");
-                return;
-            }
-            triggerGachaCore();
-        }
+    function closeStreakBonusModal() {
+        document.getElementById('streak-bonus-overlay').style.display = 'none';
+    }
 
-        function onScanSuccess(decodedText) {
-            closeCamera();
-            const cleanedText = decodedText.trim();
-            
-            if (cleanedText === 'gacha-3') {
-                checkAndResetDailyGacha();
-                if (dailyGachaStorage.count <= 0) {
-                    alert("本日のガチャ回数がなくなりました。コードを入力するか明日まで待ってね！");
-                    return;
-                }
-                triggerGachaCore();
-                return;
-            }
-
-            const foundCard = cardsData.find(card => cleanedText === card.id);
-            if (foundCard) {
-                if (unlockedCards.includes(foundCard.id)) {
-                    alert(`No.${foundCard.no} のカードはすでに持っています！`);
-                    return;
-                }
-                gachaSession.isGachaMode = false;
-                currentSingleCard = foundCard;
-                document.getElementById('quizTitle').innerText = "日本語の意味を書きなさい。";
-                document.getElementById('quizSubmitBtn').innerText = "解答する";
-                showQuiz(foundCard);
-            } else {
-                alert("これは有効なトレカのQRコードではありません。");
-            }
-        }
-
-        function triggerGachaCore() {
-            let lockedCards = cardsData.filter(card => !unlockedCards.includes(card.id));
-            if (lockedCards.length === 0) {
-                alert("すべてのカードをコンプリートしているため、ガチャを引く必要はありません！");
-                return;
-            }
-            const randomCard = lockedCards[Math.floor(Math.random() * lockedCards.length)];
-            gachaSession.isGachaMode = true;
-            gachaSession.selectedCard = randomCard;
-            gachaSession.userAnswer = "";
-            document.getElementById('quizTitle').innerText = "🔥 ガチャクイズチャレンジ";
-            document.getElementById('quizSubmitBtn').innerText = "結果を見る！";
-            showQuiz(randomCard);
-        }
-
-        function jumpToCardTab(cardNo) {
-            currentTabId = Math.floor((cardNo - 1) / CARDS_PER_PAGE);
-            renderTabs();
-        }
-
-        function showQuiz(card) {
-            document.getElementById('quizEnglish').innerText = card.quiz.answer;
-            document.getElementById('answerInput').value = ''; 
-            document.getElementById('quiz-overlay').style.display = 'flex';
-            setTimeout(() => { document.getElementById('answerInput').focus(); }, 100);
-        }
-
-        function closeQuiz() {
-            document.getElementById('quiz-overlay').style.display = 'none';
-            gachaSession.isGachaMode = false;
-        }
-
-        function cleanText(str) {
-            if (!str) return "";
-            let text = str.toLowerCase().trim();
-            text = text.replace(/[!.,?|、。！＿_-]/g, "");
-            text = text.replace(/[\u30a1-\u30f6]/g, function(match) {
-                const chr = match.charCodeAt(0) - 0x60;
-                return String.fromCharCode(chr);
-            });
-            return text;
-        }
-
-        // 🆕 【超進化】お互いがどちらかに含まれていれば正解（部分一致・表記ゆれ対応）にする関数
-        function validateAnswer(userInput, allowedAnswersString) {
-            const user = cleanText(userInput);
-            if (user === "") return false; // 空欄なら即終了
-            
-            const answersArray = allowedAnswersString.split("/");
-            
-            // スラッシュで区切られた模範解答を1つずつチェック
-            return answersArray.some(ans => {
-                const model = cleanText(ans);
-                if (model === "") return false;
-                
-                // 1. ユーザーの入力の中に模範解答が含まれている (例:「ありがとう」に「ありがとう」が含まれる)
-                // 2. 模範解答の中にユーザーの入力が含まれている (例:「ありがとうございます」に「ありがとう」が含まれる)
-                return user.includes(model) || model.includes(user);
-            });
-        }
-
-        function submitAnswer() {
-            const userInput = document.getElementById('answerInput').value;
-            document.getElementById('quiz-overlay').style.display = 'none';
-
-            if (gachaSession.isGachaMode) {
-                dailyGachaStorage.count = Math.max(0, dailyGachaStorage.count - 1);
+    /* ========== COMBO LOGIC ========== */
+    function updateCombo(isCorrect) {
+        if (isCorrect) {
+            comboCount++;
+            updateComboDisplay();
+            const milestone = checkComboMilestone(comboCount);
+            if (milestone) {
+                dailyGachaStorage.count += milestone.count;
                 localStorage.setItem('dailyGachaStorage', JSON.stringify(dailyGachaStorage));
                 checkAndResetDailyGacha();
-                evaluateAndShowGachaResult(userInput);
-            } else {
-                if (validateAnswer(userInput, currentSingleCard.quiz.meaning)) {
-                    alert("正解！カードをゲットしたよ！");
-                    jumpToCardTab(currentSingleCard.no); 
-                    startSingleGet(currentSingleCard);
-                } else {
-                    const primaryAns = currentSingleCard.quiz.meaning.split("/")[0];
-                    alert(`残念！正解は「${primaryAns}」などでした。また挑戦してね！`);
-                }
-                currentSingleCard = null;
+                setTimeout(() => showComboBonusNotice(milestone.msg, milestone.count), 1300);
             }
+        } else {
+            comboCount = 0;
+            updateComboDisplay();
         }
+    }
 
-        function evaluateAndShowGachaResult(userInput) {
-            const container = document.getElementById('gachaContainer');
-            container.innerHTML = ''; 
-            document.getElementById('gachaCloseBtn').style.display = 'none'; 
-            document.getElementById('gacha-overlay').style.display = 'flex';
+    function checkComboMilestone(combo) {
+        if (combo === 3)  return { count: 1, msg: `🔥 3連続正解！ ガチャ+1回！` };
+        if (combo === 5)  return { count: 1, msg: `⚡ 5連続正解！ ガチャ+1回！` };
+        if (combo === 10) return { count: 3, msg: `🌟 10連続正解！ ガチャ+3回！` };
+        if (combo > 10 && combo % 10 === 0) return { count: 3, msg: `✨ ${combo}連続正解！ ガチャ+3回！` };
+        return null;
+    }
 
-            const card = gachaSession.selectedCard;
-            const isCorrect = validateAnswer(userInput, card.quiz.meaning);
-            
-            const gachaCardEl = document.createElement('div');
-            gachaCardEl.className = 'gacha-card';
-            gachaCardEl.id = 'gachaCard-0';
-
-            if (isCorrect) {
-                if (!unlockedCards.includes(card.id)) {
-                    unlockedCards.push(card.id);
-                }
-                gachaCardEl.innerHTML = `
-                    <div class="gacha-face gacha-back">？</div>
-                    <div class="gacha-face gacha-front">
-                        <img src="${card.img}">
-                        <div class="gacha-info">No.${card.no}</div>
-                    </div>
-                `;
-                document.getElementById('gachaResultTitle').innerText = "判定：正解！カード獲得";
-                jumpToCardTab(card.no); 
-            } else {
-                const primaryAns = card.quiz.meaning.split("/")[0];
-                gachaCardEl.innerHTML = `
-                    <div class="gacha-face gacha-back is-missed">✕<br><span style="font-size:14px; margin-top:10px; display:block;">ハズレ</span></div>
-                `;
-                document.getElementById('gachaResultTitle').innerText = `判定：不正解（正しい意味は: ${primaryAns}）`;
-            }
-            container.appendChild(gachaCardEl);
-
-            localStorage.setItem('unlockedCards', JSON.stringify(unlockedCards));
-
-            if (isCorrect) {
-                setTimeout(() => {
-                    document.getElementById('gachaCard-0').classList.add('do-flip');
-                    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-                }, 500);
-            }
-
-            setTimeout(() => { document.getElementById('gachaCloseBtn').style.display = 'block'; }, 1200);
+    function updateComboDisplay() {
+        const el = document.getElementById('comboDisplay');
+        const countEl = document.getElementById('comboCount');
+        if (!el || !countEl) return;
+        if (comboCount >= 2) {
+            countEl.innerText = comboCount;
+            el.style.display = 'block';
+            el.classList.remove('combo-pulse');
+            void el.offsetWidth;
+            el.classList.add('combo-pulse');
+        } else {
+            el.style.display = 'none';
         }
+    }
 
-        function startSingleGet(card) {
-            const container = document.getElementById('gachaContainer');
-            container.innerHTML = '';
-            document.getElementById('gachaCloseBtn').style.display = 'none';
-            document.getElementById('gacha-overlay').style.display = 'flex';
-            document.getElementById('gachaResultTitle').innerText = "カード獲得！";
+    function showComboBonusNotice(msg, bonusCount) {
+        const el = document.getElementById('comboBonusNotice');
+        if (!el) return;
+        el.innerText = msg;
+        el.style.display = 'block';
+        el.style.animation = 'none';
+        void el.offsetWidth;
+        el.style.animation = 'slideUp 0.4s ease-out';
+        confetti({ particleCount: 60, spread: 50, origin: { y: 0.85 } });
+        setTimeout(() => { el.style.display = 'none'; }, 2800);
+    }
 
-            if (!unlockedCards.includes(card.id)) {
-                unlockedCards.push(card.id);
-                localStorage.setItem('unlockedCards', JSON.stringify(unlockedCards));
+    /* ========== RARITY CONFETTI ========== */
+    function fireRarityConfetti(rarity) {
+        if (rarity === 'UR') {
+            confetti({ particleCount: 120, spread: 90, origin: { y: 0.6 }, colors: ['#FFD700','#FFA500','#FF8C00','#FFECB3','#fff'] });
+            setTimeout(() => confetti({ particleCount: 80, angle: 120, spread: 60, origin: { x: 0, y: 0.6 }, colors: ['#FFD700','#FFA500'] }), 350);
+            setTimeout(() => confetti({ particleCount: 80, angle: 60,  spread: 60, origin: { x: 1, y: 0.6 }, colors: ['#FFD700','#FFA500'] }), 650);
+        } else if (rarity === 'SR') {
+            confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, colors: ['#E1BEE7','#CE93D8','#AB47BC','#7B1FA2','#fff'] });
+        } else if (rarity === 'R') {
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#BBDEFB','#64B5F6','#1E88E5','#1565C0','#fff'] });
+        } else {
+            confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+        }
+    }
+
+    /* ========== COUPON ========== */
+    function openCouponModal() {
+        document.getElementById('couponInput').value = '';
+        document.getElementById('coupon-overlay').style.display = 'flex';
+        setTimeout(() => document.getElementById('couponInput').focus(), 100);
+    }
+    function closeCouponModal() {
+        document.getElementById('coupon-overlay').style.display = 'none';
+    }
+    function submitCoupon() {
+        const inputCode = document.getElementById('couponInput').value.trim().toUpperCase();
+        if (inputCode === "") { alert("コードを入力してください。"); return; }
+        if (!(inputCode in VALID_COUPONS)) { alert("無効なクーポンコードです。"); return; }
+        if (dailyGachaStorage.usedCoupons.includes(inputCode)) { alert("このコードはすでに使用されています。"); return; }
+        const rewardCount = VALID_COUPONS[inputCode];
+        dailyGachaStorage.count += rewardCount;
+        dailyGachaStorage.usedCoupons.push(inputCode);
+        localStorage.setItem('dailyGachaStorage', JSON.stringify(dailyGachaStorage));
+        closeCouponModal();
+        checkAndResetDailyGacha();
+        confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 } });
+        alert("クーポン適用成功！🎉");
+    }
+
+    /* ========== TABS ========== */
+    function renderTabs() {
+        const tabsContainer = document.getElementById('tabsContainer');
+        tabsContainer.innerHTML = '';
+        const totalTabs = Math.ceil(TOTAL_CARDS / CARDS_PER_PAGE);
+        if (totalTabs <= 1) return;
+        for (let i = 0; i < totalTabs; i++) {
+            const startNo = i * CARDS_PER_PAGE + 1;
+            const endNo = Math.min((i + 1) * CARDS_PER_PAGE, TOTAL_CARDS);
+            const btn = document.createElement('button');
+            btn.className = `tab-button ${i === currentTabId ? 'active' : ''}`;
+            btn.innerText = `${startNo} 〜 ${endNo}`;
+            btn.onclick = () => { currentTabId = i; renderTabs(); renderCollection(); };
+            tabsContainer.appendChild(btn);
+        }
+    }
+
+    /* ========== COLLECTION RENDER ========== */
+    function renderCollection() {
+        checkAndResetDailyGacha();
+        document.getElementById('collectionCounter').innerText = `${unlockedCards.length} / ${TOTAL_CARDS}`;
+        const grid = document.getElementById('collectionGrid');
+        grid.innerHTML = '';
+        const startIndex = currentTabId * CARDS_PER_PAGE;
+        const currentFilteredCards = cardsData.slice(startIndex, startIndex + CARDS_PER_PAGE);
+
+        currentFilteredCards.forEach(card => {
+            const isUnlocked = unlockedCards.includes(card.id);
+            const rarity = getRarity(card.no);
+            const cardEl = document.createElement('div');
+            cardEl.className = `card-container ${isUnlocked ? '' : 'locked'}`;
+            cardEl.onclick = () => tapCard(card, isUnlocked);
+
+            let cardVisualHTML = isUnlocked
+                ? `<div style="position:relative">
+                       <img src="${card.img}" alt="No.${card.no}" class="card-img" loading="lazy">
+                       <div class="rarity-badge rarity-badge-${rarity}">${rarity}</div>
+                   </div>`
+                : `<div class="locked-placeholder">？</div>`;
+
+            cardEl.innerHTML = `${cardVisualHTML}<div class="card-info"><div>No.${card.no}</div></div>`;
+            grid.appendChild(cardEl);
+        });
+    }
+
+    /* ========== CARD TAP / ZOOM ========== */
+    function tapCard(card, isUnlocked) {
+        if (!isUnlocked) return;
+        const rarity = getRarity(card.no);
+        const zoomContent = document.getElementById('zoomContent');
+        zoomContent.innerHTML = `
+            <img src="${card.img}" alt="No.${card.no}">
+            <div class="zoom-info">
+                <div class="rarity-badge rarity-badge-${rarity}" style="position:static;display:inline-block;font-size:11px;padding:3px 8px;border-radius:6px;margin-bottom:6px;">${rarity}</div>
+                <div>No.${card.no}</div>
+            </div>
+        `;
+        document.getElementById('zoom-overlay').style.display = 'flex';
+    }
+    function closeZoom() { document.getElementById('zoom-overlay').style.display = 'none'; }
+
+    /* ========== CAMERA / QR ========== */
+    function openCamera() {
+        document.getElementById('camera-modal').style.display = 'flex';
+        html5QrcodeScanner = new Html5Qrcode("reader");
+        html5QrcodeScanner.start(
+            { facingMode: "environment" }, { fps: 10, qrbox: 250 }, onScanSuccess
+        ).catch(() => {
+            alert("カメラの起動に失敗しました。");
+            document.getElementById('camera-modal').style.display = 'none';
+        });
+    }
+    function closeCamera() {
+        if (html5QrcodeScanner) {
+            html5QrcodeScanner.stop().then(() => { document.getElementById('camera-modal').style.display = 'none'; });
+        } else {
+            document.getElementById('camera-modal').style.display = 'none';
+        }
+    }
+    function onScanSuccess(decodedText) {
+        closeCamera();
+        const cleanedText = decodedText.trim();
+        if (cleanedText === 'gacha-3') {
+            checkAndResetDailyGacha();
+            if (dailyGachaStorage.count <= 0) { alert("本日のガチャ回数がなくなりました。コードを入力するか明日まで待ってね！"); return; }
+            triggerGachaCore();
+            return;
+        }
+        const foundCard = cardsData.find(card => cleanedText === card.id);
+        if (foundCard) {
+            if (unlockedCards.includes(foundCard.id)) { alert(`No.${foundCard.no} のカードはすでに持っています！`); return; }
+            gachaSession.isGachaMode = false;
+            currentSingleCard = foundCard;
+            document.getElementById('quizTitle').innerText = "日本語の意味を書きなさい。";
+            document.getElementById('quizSubmitBtn').innerText = "解答する";
+            showQuiz(foundCard);
+        } else {
+            alert("これは有効なトレカのQRコードではありません。");
+        }
+    }
+
+    /* ========== GACHA TRIGGER ========== */
+    function startGachaViaButton() {
+        checkAndResetDailyGacha();
+        if (dailyGachaStorage.count <= 0) { alert("本日のガチャ回数がなくなりました。コードを入力するか明日まで待ってね！"); return; }
+        triggerGachaCore();
+    }
+    function triggerGachaCore() {
+        const lockedCards = cardsData.filter(card => !unlockedCards.includes(card.id));
+        if (lockedCards.length === 0) { alert("すべてのカードをコンプリートしています！"); return; }
+        const randomCard = lockedCards[Math.floor(Math.random() * lockedCards.length)];
+        gachaSession.isGachaMode = true;
+        gachaSession.selectedCard = randomCard;
+        gachaSession.userAnswer = "";
+        document.getElementById('quizTitle').innerText = "🔥 ガチャクイズチャレンジ";
+        document.getElementById('quizSubmitBtn').innerText = "結果を見る！";
+        showQuiz(randomCard);
+    }
+
+    function jumpToCardTab(cardNo) {
+        currentTabId = Math.floor((cardNo - 1) / CARDS_PER_PAGE);
+        renderTabs();
+    }
+
+    /* ========== QUIZ DISPLAY ========== */
+    function showQuiz(card) {
+        document.getElementById('quizEnglish').innerText = card.quiz.answer;
+        document.getElementById('answerInput').value = '';
+        document.getElementById('quiz-overlay').style.display = 'flex';
+        setTimeout(() => document.getElementById('answerInput').focus(), 100);
+    }
+    function closeQuiz() {
+        document.getElementById('quiz-overlay').style.display = 'none';
+        gachaSession.isGachaMode = false;
+    }
+
+    /* ========== ANSWER VALIDATION ========== */
+    function cleanText(str) {
+        if (!str) return "";
+        let text = str.toLowerCase().trim();
+        text = text.replace(/[!.,?|、。！＿_-]/g, "");
+        text = text.replace(/[\u30a1-\u30f6]/g, match => String.fromCharCode(match.charCodeAt(0) - 0x60));
+        return text;
+    }
+    function validateAnswer(userInput, allowedAnswersString) {
+        const user = cleanText(userInput);
+        if (user === "") return false;
+        return allowedAnswersString.split("/").some(ans => {
+            const model = cleanText(ans);
+            if (model === "") return false;
+            return user.includes(model) || model.includes(user);
+        });
+    }
+
+    /* ========== SUBMIT ANSWER ========== */
+    function submitAnswer() {
+        const userInput = document.getElementById('answerInput').value;
+        document.getElementById('quiz-overlay').style.display = 'none';
+
+        if (gachaSession.isGachaMode) {
+            dailyGachaStorage.count = Math.max(0, dailyGachaStorage.count - 1);
+            localStorage.setItem('dailyGachaStorage', JSON.stringify(dailyGachaStorage));
+            checkAndResetDailyGacha();
+            evaluateAndShowGachaResult(userInput);
+        } else {
+            const isCorrect = validateAnswer(userInput, currentSingleCard.quiz.meaning);
+            updateCombo(isCorrect);
+            if (isCorrect) {
+                alert("正解！カードをゲットしたよ！");
+                jumpToCardTab(currentSingleCard.no);
+                startSingleGet(currentSingleCard);
+            } else {
+                const primaryAns = currentSingleCard.quiz.meaning.split("/")[0];
+                alert(`残念！正解は「${primaryAns}」などでした。また挑戦してね！`);
             }
+            currentSingleCard = null;
+        }
+    }
 
-            const gachaCardEl = document.createElement('div');
-            gachaCardEl.className = 'gacha-card';
-            gachaCardEl.id = 'gachaCard-0';
+    /* ========== GACHA RESULT (with rarity) ========== */
+    function evaluateAndShowGachaResult(userInput) {
+        const container = document.getElementById('gachaContainer');
+        container.innerHTML = '';
+        document.getElementById('gachaCloseBtn').style.display = 'none';
+        document.getElementById('gacha-overlay').style.display = 'flex';
+
+        const card = gachaSession.selectedCard;
+        const isCorrect = validateAnswer(userInput, card.quiz.meaning);
+
+        updateCombo(isCorrect);
+
+        const rarity = getRarity(card.no);
+        const rc = RARITY_CONFIG[rarity];
+
+        const gachaCardEl = document.createElement('div');
+        gachaCardEl.className = 'gacha-card';
+        gachaCardEl.id = 'gachaCard-0';
+
+        if (isCorrect) {
+            if (!unlockedCards.includes(card.id)) unlockedCards.push(card.id);
             gachaCardEl.innerHTML = `
-                <div class="gacha-face gacha-back">？</div>
-                <div class="gacha-face gacha-front">
+                <div class="gacha-face gacha-back ${rc.backClass}">？</div>
+                <div class="gacha-face gacha-front ${rc.frontClass}">
+                    <div class="gacha-rarity-badge gacha-rarity-badge-${rarity}">${rc.label}</div>
                     <img src="${card.img}">
                     <div class="gacha-info">No.${card.no}</div>
                 </div>
             `;
-            container.appendChild(gachaCardEl);
+            document.getElementById('gachaResultTitle').innerText = `判定：正解！${rc.emoji} ${rc.resultTitle}`;
+            jumpToCardTab(card.no);
+        } else {
+            const primaryAns = card.quiz.meaning.split("/")[0];
+            gachaCardEl.innerHTML = `
+                <div class="gacha-face gacha-back is-missed">✕<br><span style="font-size:14px;margin-top:10px;display:block;">ハズレ</span></div>
+            `;
+            document.getElementById('gachaResultTitle').innerText = `判定：不正解（正しい意味は: ${primaryAns}）`;
+        }
+        container.appendChild(gachaCardEl);
+        localStorage.setItem('unlockedCards', JSON.stringify(unlockedCards));
 
+        if (isCorrect) {
             setTimeout(() => {
                 document.getElementById('gachaCard-0').classList.add('do-flip');
-                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-                document.getElementById('gachaCloseBtn').style.display = 'block';
+                fireRarityConfetti(rarity);
             }, 500);
         }
+        setTimeout(() => { document.getElementById('gachaCloseBtn').style.display = 'block'; }, 1200);
+    }
 
-        function closeGacha() {
-            document.getElementById('gacha-overlay').style.display = 'none';
-            gachaSession.isGachaMode = false;
-            renderCollection(); 
+    /* ========== SINGLE CARD GET (QR scan, with rarity) ========== */
+    function startSingleGet(card) {
+        const container = document.getElementById('gachaContainer');
+        container.innerHTML = '';
+        document.getElementById('gachaCloseBtn').style.display = 'none';
+        document.getElementById('gacha-overlay').style.display = 'flex';
+
+        const rarity = getRarity(card.no);
+        const rc = RARITY_CONFIG[rarity];
+        document.getElementById('gachaResultTitle').innerText = `${rc.emoji} ${rc.resultTitle}`;
+
+        if (!unlockedCards.includes(card.id)) {
+            unlockedCards.push(card.id);
+            localStorage.setItem('unlockedCards', JSON.stringify(unlockedCards));
         }
 
-        document.getElementById('answerInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') { submitAnswer(); }
-        });
-        document.getElementById('couponInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') { submitCoupon(); }
-        });
+        const gachaCardEl = document.createElement('div');
+        gachaCardEl.className = 'gacha-card';
+        gachaCardEl.id = 'gachaCard-0';
+        gachaCardEl.innerHTML = `
+            <div class="gacha-face gacha-back ${rc.backClass}">？</div>
+            <div class="gacha-face gacha-front ${rc.frontClass}">
+                <div class="gacha-rarity-badge gacha-rarity-badge-${rarity}">${rc.label}</div>
+                <img src="${card.img}">
+                <div class="gacha-info">No.${card.no}</div>
+            </div>
+        `;
+        container.appendChild(gachaCardEl);
 
-        // 初期実行
-        renderTabs();
+        setTimeout(() => {
+            document.getElementById('gachaCard-0').classList.add('do-flip');
+            fireRarityConfetti(rarity);
+            document.getElementById('gachaCloseBtn').style.display = 'block';
+        }, 500);
+    }
+
+    /* ========== CLOSE GACHA ========== */
+    function closeGacha() {
+        document.getElementById('gacha-overlay').style.display = 'none';
+        gachaSession.isGachaMode = false;
         renderCollection();
-    </script></body>
+    }
+
+    /* ========== KEYBOARD SHORTCUTS ========== */
+    document.getElementById('answerInput').addEventListener('keypress', e => { if (e.key === 'Enter') submitAnswer(); });
+    document.getElementById('couponInput').addEventListener('keypress', e => { if (e.key === 'Enter') submitCoupon(); });
+
+    /* ========== INIT ========== */
+    renderTabs();
+    renderCollection();
+    checkLoginStreak();
+</script>
+</body>
 </html>
