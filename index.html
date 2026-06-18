@@ -139,6 +139,29 @@
         .rarity-badge-SR { background: #6a1b9a; box-shadow: 0 0 5px #8e24aaaa; }
         .rarity-badge-UR { background: #9f6700; border: 1px solid #ffd700; color: #fff3c0; animation: ur-shimmer 2s ease-in-out infinite; }
 
+        /* ===== RARITY CARD BACKGROUNDS (collection grid) ===== */
+        .card-rarity-R {
+            background: linear-gradient(160deg, #daeeff 0%, #c4dfff 100%);
+            box-shadow: 0 0 20px rgba(30,136,229,0.6), 0 6px 15px rgba(0,0,0,0.3);
+        }
+        .card-rarity-SR {
+            background: linear-gradient(160deg, #f2e4ff 0%, #e2caff 100%);
+            box-shadow: 0 0 24px rgba(142,36,170,0.7), 0 0 48px rgba(142,36,170,0.25), 0 6px 15px rgba(0,0,0,0.3);
+        }
+        @keyframes rainbow-card-glow {
+            0%   { box-shadow: 0 0 26px rgba(255,68,68,0.75),  0 6px 15px rgba(0,0,0,0.3); }
+            16%  { box-shadow: 0 0 26px rgba(255,136,0,0.75),  0 6px 15px rgba(0,0,0,0.3); }
+            33%  { box-shadow: 0 0 26px rgba(255,204,0,0.75),  0 6px 15px rgba(0,0,0,0.3); }
+            50%  { box-shadow: 0 0 26px rgba(68,204,68,0.75),  0 6px 15px rgba(0,0,0,0.3); }
+            66%  { box-shadow: 0 0 26px rgba(68,136,255,0.75), 0 6px 15px rgba(0,0,0,0.3); }
+            83%  { box-shadow: 0 0 26px rgba(170,68,255,0.75), 0 6px 15px rgba(0,0,0,0.3); }
+            100% { box-shadow: 0 0 26px rgba(255,68,68,0.75),  0 6px 15px rgba(0,0,0,0.3); }
+        }
+        .card-rarity-UR {
+            background: linear-gradient(160deg, #fff9d4 0%, #ffe880 100%);
+            animation: rainbow-card-glow 2s linear infinite;
+        }
+
         .gacha-back.rarity-N  { background: linear-gradient(135deg, #3a3a3a, #1a1a1a); color: #aaa; border-color: #555; }
         .gacha-back.rarity-R  { background: linear-gradient(135deg, #0d47a1, #082870); color: #90caf9; border-color: #1e88e5; box-shadow: 0 0 20px #1e88e544; }
         .gacha-back.rarity-SR { background: linear-gradient(135deg, #4a0082, #1a0040); color: #e1bee7; border-color: #8e24aa; box-shadow: 0 0 25px #8e24aa66; }
@@ -567,7 +590,7 @@
             const isUnlocked = unlockedCards.includes(card.id);
             const rarity = getRarity(card.no);
             const cardEl = document.createElement('div');
-            cardEl.className = `card-container ${isUnlocked ? '' : 'locked'}`;
+            cardEl.className = `card-container ${isUnlocked ? `card-rarity-${rarity}` : 'locked'}`;
             cardEl.onclick = () => tapCard(card, isUnlocked);
 
             let cardVisualHTML = isUnlocked
