@@ -16,15 +16,112 @@
         body {
             font-family: 'Noto Serif JP', serif;
             background: linear-gradient(180deg,
-                #0d1433 0%, #1c1050 30%,
-                #0d2618 65%, #101c12 100%);
+                #03060f 0%,
+                #06091e 8%,
+                #090e38 18%,
+                #0e1248 28%,
+                #130d45 38%,
+                #0c1540 50%,
+                #091530 60%,
+                #07140f 72%,
+                #051208 84%,
+                #030a05 100%);
             background-attachment: fixed;
             margin: 0;
-            padding: 20px;
+            padding: 20px 20px 240px;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+        }
+
+        /* ===== MOON ===== */
+        .moon-glow {
+            position: fixed;
+            top: -45px; right: 9%;
+            width: 170px; height: 170px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 42% 42%,
+                #fffef2 0%, #fff9d8 12%,
+                #ffe9a0 22%, rgba(255,215,80,0.45) 38%,
+                rgba(200,160,50,0.18) 55%,
+                rgba(150,110,30,0.05) 70%,
+                transparent 80%);
+            box-shadow:
+                0 0 50px rgba(255,230,100,0.28),
+                0 0 110px rgba(255,200,60,0.13),
+                0 0 220px rgba(220,170,40,0.06);
+            pointer-events: none; z-index: 0;
+        }
+        /* Subtle moon ring halo */
+        .moon-glow::after {
+            content: '';
+            position: absolute; inset: -25%;
+            border-radius: 50%;
+            background: radial-gradient(circle,
+                transparent 48%,
+                rgba(255,230,100,0.06) 56%,
+                transparent 66%);
+        }
+
+        /* ===== AURORA MIST ===== */
+        .aurora-mist {
+            position: fixed;
+            top: 12%; left: 0; right: 0;
+            height: 35%;
+            pointer-events: none; z-index: 0;
+            background:
+                radial-gradient(ellipse 70% 40% at 25% 40%,
+                    rgba(18,80,45,0.1) 0%, transparent 70%),
+                radial-gradient(ellipse 55% 35% at 75% 30%,
+                    rgba(40,22,80,0.1) 0%, transparent 65%),
+                radial-gradient(ellipse 40% 25% at 50% 60%,
+                    rgba(15,55,80,0.07) 0%, transparent 70%);
+            filter: blur(20px);
+        }
+
+        /* ===== STARS ===== */
+        .stars-layer {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 65%;
+            pointer-events: none; z-index: 0;
+            overflow: hidden;
+        }
+        @keyframes star-twinkle {
+            0%, 100% { opacity: 1; }
+            45% { opacity: 0.15; }
+        }
+        @keyframes star-pulse {
+            0%, 100% { opacity: 0.85; r: 1.8; }
+            50% { opacity: 0.4; r: 1.2; }
+        }
+
+        /* ===== FOREST SILHOUETTE ===== */
+        .forest-silhouette {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            height: 210px;
+            pointer-events: none; z-index: 1;
+            overflow: hidden;
+        }
+        .forest-silhouette svg {
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 100%; height: 100%;
+        }
+
+        /* ===== MIST AT FOREST BASE ===== */
+        .forest-mist {
+            position: fixed;
+            bottom: 80px; left: 0; right: 0;
+            height: 70px;
+            pointer-events: none; z-index: 2;
+            background: linear-gradient(to top,
+                rgba(180,220,200,0.07) 0%,
+                rgba(150,200,180,0.04) 50%,
+                transparent 100%);
+            filter: blur(8px);
         }
 
         /* ===== MAGICAL SPARKS (金・青・紫の魔法粒子) ===== */
@@ -76,23 +173,43 @@
 
         /* ===== HEADER ===== */
         .header-plate {
-            background: rgba(12, 8, 35, 0.88);
-            border: 2px solid #c8a030;
-            border-radius: 16px;
-            padding: 15px 30px;
+            background: linear-gradient(160deg,
+                rgba(10,6,32,0.94) 0%,
+                rgba(14,9,42,0.96) 50%,
+                rgba(8,14,28,0.94) 100%);
+            border: 1px solid rgba(200,165,50,0.6);
+            border-radius: 18px;
+            padding: 16px 30px 18px;
             text-align: center;
-            box-shadow: 0 6px 24px rgba(0,0,0,0.5), 0 0 30px rgba(180,150,40,0.12),
-                        inset 0 1px 0 rgba(200,170,60,0.15);
-            backdrop-filter: blur(6px);
+            box-shadow:
+                0 8px 32px rgba(0,0,0,0.6),
+                0 0 0 1px rgba(100,80,20,0.2),
+                0 0 50px rgba(180,140,30,0.1),
+                inset 0 1px 0 rgba(220,180,60,0.2),
+                inset 0 -1px 0 rgba(100,70,10,0.15);
+            backdrop-filter: blur(10px);
             margin-bottom: 25px;
             width: 90%; max-width: 450px;
             position: relative; z-index: 2;
         }
+        /* Ornamental corner decorations */
+        .header-plate::before,
+        .header-plate::after {
+            content: '✦';
+            position: absolute; top: 10px;
+            font-size: 10px; color: rgba(200,165,50,0.5);
+            line-height: 1;
+        }
+        .header-plate::before { left: 14px; }
+        .header-plate::after  { right: 14px; }
         h1 {
             color: #e8d070; margin: 0 0 5px 0; font-size: 24px;
             font-family: 'Noto Serif JP', serif; font-weight: 700;
             letter-spacing: 0.06em;
-            text-shadow: 0 0 18px rgba(220,180,50,0.5), 0 1px 3px rgba(0,0,0,0.5);
+            text-shadow:
+                0 0 20px rgba(220,180,50,0.55),
+                0 0 40px rgba(180,140,30,0.2),
+                0 1px 3px rgba(0,0,0,0.6);
         }
         .counter { font-size: 18px; color: #c8a060; margin: 0 0 10px 0; font-weight: bold; }
 
@@ -690,6 +807,114 @@
     </style>
 </head>
 <body>
+
+<!-- ===== ATMOSPHERIC BACKGROUND LAYERS ===== -->
+<!-- Moon -->
+<div class="moon-glow" aria-hidden="true"></div>
+<!-- Aurora mist -->
+<div class="aurora-mist" aria-hidden="true"></div>
+<!-- Star field -->
+<svg class="stars-layer" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 580" preserveAspectRatio="xMidYMid slice">
+  <!-- Large bright stars -->
+  <circle cx="112" cy="35" r="1.9" fill="white" opacity="1" style="animation:star-twinkle 4.2s ease-in-out infinite 0.5s"/>
+  <circle cx="338" cy="68" r="1.8" fill="white" opacity="0.95" style="animation:star-twinkle 5.8s ease-in-out infinite 1.2s"/>
+  <circle cx="572" cy="28" r="2" fill="white" opacity="1" style="animation:star-twinkle 3.5s ease-in-out infinite 0s"/>
+  <circle cx="712" cy="52" r="1.8" fill="white" opacity="0.92"/>
+  <circle cx="208" cy="125" r="1.8" fill="white" opacity="0.9" style="animation:star-twinkle 6.1s ease-in-out infinite 2s"/>
+  <circle cx="615" cy="108" r="1.8" fill="white" opacity="0.88"/>
+  <circle cx="448" cy="45" r="1.9" fill="white" opacity="0.95" style="animation:star-twinkle 4.8s ease-in-out infinite 3.5s"/>
+  <circle cx="768" cy="135" r="1.7" fill="white" opacity="0.85"/>
+  <circle cx="890" cy="75" r="1.8" fill="white" opacity="0.9" style="animation:star-twinkle 5.2s ease-in-out infinite 1.8s"/>
+  <!-- Gold-tinted stars -->
+  <circle cx="258" cy="55" r="1.6" fill="#ffe8a0" opacity="0.92" style="animation:star-twinkle 7s ease-in-out infinite 0.8s"/>
+  <circle cx="672" cy="82" r="1.5" fill="#ffd880" opacity="0.88"/>
+  <circle cx="510" cy="142" r="1.5" fill="#ffe0a0" opacity="0.82" style="animation:star-twinkle 6.5s ease-in-out infinite 4s"/>
+  <circle cx="155" cy="185" r="1.4" fill="#ffe8b0" opacity="0.8"/>
+  <!-- Medium stars -->
+  <circle cx="52"  cy="98"  r="1.1" fill="white" opacity="0.75"/>
+  <circle cx="162" cy="192" r="1.1" fill="white" opacity="0.7"/>
+  <circle cx="282" cy="148" r="1.1" fill="white" opacity="0.78" style="animation:star-twinkle 8s ease-in-out infinite 2.5s"/>
+  <circle cx="392" cy="182" r="1.1" fill="white" opacity="0.65"/>
+  <circle cx="502" cy="78"  r="1.1" fill="white" opacity="0.8"/>
+  <circle cx="642" cy="168" r="1.1" fill="white" opacity="0.72"/>
+  <circle cx="752" cy="92"  r="1.1" fill="white" opacity="0.68"/>
+  <circle cx="858" cy="152" r="1.1" fill="white" opacity="0.7" style="animation:star-twinkle 5.5s ease-in-out infinite 3s"/>
+  <circle cx="968" cy="88"  r="1.1" fill="white" opacity="0.72"/>
+  <circle cx="42"  cy="228" r="1.1" fill="white" opacity="0.6"/>
+  <circle cx="148" cy="282" r="1.1" fill="white" opacity="0.58"/>
+  <circle cx="352" cy="262" r="1.1" fill="white" opacity="0.62"/>
+  <circle cx="468" cy="318" r="1.1" fill="white" opacity="0.5"/>
+  <circle cx="568" cy="238" r="1.1" fill="white" opacity="0.6" style="animation:star-twinkle 9s ease-in-out infinite 1s"/>
+  <circle cx="688" cy="292" r="1.1" fill="white" opacity="0.55"/>
+  <circle cx="808" cy="255" r="1.1" fill="white" opacity="0.52"/>
+  <circle cx="925" cy="228" r="1.1" fill="white" opacity="0.58"/>
+  <!-- Small faint stars -->
+  <circle cx="30"  cy="60"  r="0.7" fill="white" opacity="0.5"/>
+  <circle cx="85"  cy="140" r="0.7" fill="white" opacity="0.48"/>
+  <circle cx="135" cy="85"  r="0.7" fill="white" opacity="0.55"/>
+  <circle cx="222" cy="42"  r="0.7" fill="white" opacity="0.5"/>
+  <circle cx="298" cy="125" r="0.7" fill="white" opacity="0.45"/>
+  <circle cx="358" cy="210" r="0.7" fill="white" opacity="0.42"/>
+  <circle cx="425" cy="112" r="0.7" fill="white" opacity="0.5"/>
+  <circle cx="485" cy="175" r="0.7" fill="white" opacity="0.46"/>
+  <circle cx="535" cy="240" r="0.7" fill="white" opacity="0.44"/>
+  <circle cx="605" cy="135" r="0.7" fill="white" opacity="0.5"/>
+  <circle cx="658" cy="195" r="0.7" fill="white" opacity="0.45"/>
+  <circle cx="705" cy="65"  r="0.7" fill="white" opacity="0.52"/>
+  <circle cx="775" cy="182" r="0.7" fill="white" opacity="0.46"/>
+  <circle cx="835" cy="115" r="0.7" fill="white" opacity="0.48"/>
+  <circle cx="895" cy="175" r="0.7" fill="white" opacity="0.44"/>
+  <circle cx="955" cy="135" r="0.7" fill="white" opacity="0.5"/>
+  <circle cx="18"  cy="288" r="0.7" fill="white" opacity="0.38"/>
+  <circle cx="108" cy="348" r="0.7" fill="white" opacity="0.36"/>
+  <circle cx="192" cy="318" r="0.7" fill="white" opacity="0.4"/>
+  <circle cx="322" cy="372" r="0.7" fill="white" opacity="0.35"/>
+  <circle cx="412" cy="432" r="0.7" fill="white" opacity="0.32"/>
+  <circle cx="495" cy="325" r="0.7" fill="white" opacity="0.38"/>
+  <circle cx="568" cy="458" r="0.7" fill="white" opacity="0.3"/>
+  <circle cx="678" cy="405" r="0.7" fill="white" opacity="0.34"/>
+  <circle cx="762" cy="365" r="0.7" fill="white" opacity="0.38"/>
+  <circle cx="845" cy="435" r="0.7" fill="white" opacity="0.32"/>
+  <circle cx="925" cy="338" r="0.7" fill="white" opacity="0.36"/>
+  <circle cx="982" cy="465" r="0.7" fill="white" opacity="0.28"/>
+</svg>
+<!-- Forest base mist -->
+<div class="forest-mist" aria-hidden="true"></div>
+<!-- Forest silhouette -->
+<div class="forest-silhouette" aria-hidden="true">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 200" preserveAspectRatio="xMidYMax slice">
+    <!-- Back layer: distant forest (muted dark green) -->
+    <path fill="#071a0c" opacity="0.6"
+      d="M0,200 L0,140 L35,105 L70,128 L108,92 L145,112
+         L180,80 L215,100 L252,68 L288,90 L325,62 L362,82
+         L400,55 L438,78 L475,62 L512,80 L548,52 L585,72
+         L622,58 L660,78 L698,88 L735,65 L772,80 L810,58
+         L848,72 L885,62 L922,78 L960,65 L1000,72 L1000,200 Z"/>
+    <!-- Front layer: near forest (near-black with deep green tint) -->
+    <path fill="#030a05" opacity="1"
+      d="M0,200 L0,78
+         L25,22 L50,75
+         Q72,45 95,75
+         L112,55 L130,8 L150,55
+         L170,42 L188,4 L210,45
+         Q234,14 258,45
+         L278,25 L298,0 L318,28
+         L338,48 L358,18 L378,48
+         Q402,20 426,48
+         L445,32 L465,2 L488,35
+         L510,50 L528,12 L548,2 L568,18
+         L590,35
+         Q612,8 636,38
+         L655,25 L675,0 L695,28
+         L715,45 L735,22 L755,55
+         Q778,28 802,52
+         L820,35 L840,8 L862,38
+         L882,52 L900,28 L920,55
+         Q942,25 965,52
+         L985,35 L1000,45
+         L1000,200 Z"/>
+  </svg>
+</div>
 
 <div class="particles" aria-hidden="true">
   <div class="particle"></div>
