@@ -242,6 +242,24 @@
             background: #f0ecff; border-radius: 8px; border: 1px solid #d0c8f0;
             font-family: 'EB Garamond', serif; font-style: italic; letter-spacing: 0.04em;
         }
+        .quiz-sentence {
+            font-size: 18px; color: #2a1a50; padding: 14px 16px;
+            margin: 10px 0 16px 0; background: #f0ecff;
+            border-radius: 10px; border: 1px solid #d0c8f0;
+            font-family: 'EB Garamond', serif; line-height: 1.7; text-align: left;
+        }
+        .quiz-blank { font-size: 22px; font-weight: bold; color: #8a4010; letter-spacing: 0.1em; }
+        .quiz-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+        .quiz-choice-btn {
+            padding: 12px 8px; font-size: 15px; font-weight: bold;
+            background: #fffdf5; color: #3a2a10;
+            border: 2px solid #c0a870; border-radius: 10px;
+            cursor: pointer; font-family: 'EB Garamond', serif;
+            transition: all 0.15s; line-height: 1.3;
+        }
+        .quiz-choice-btn:hover { background: #f0dcaa; border-color: #8a6a2a; transform: translateY(-1px); }
+        .quiz-choice-btn.correct { background: #d4edda; border-color: #2a8a50; color: #1a5a30; }
+        .quiz-choice-btn.wrong   { background: #f8d7da; border-color: #8a2a2a; color: #5a1010; }
 
         #camera-modal { background: rgba(10,8,4,0.88); z-index: 10; flex-direction: column; }
         #reader { width: 300px; background: white; border-radius: 8px; overflow: hidden; }
@@ -740,10 +758,9 @@
 
 <div id="quiz-overlay" class="modal-overlay">
     <div class="custom-box">
-        <h3 style="margin:0;color:#524130;" id="quizTitle">日本語の意味を書きなさい。</h3>
-        <div class="quiz-english" id="quizEnglish">Hello!</div>
-        <input type="text" id="answerInput" class="modal-input" placeholder="日本語の意味を入力" autocomplete="off">
-        <button class="modal-btn" id="quizSubmitBtn" onclick="submitAnswer()">解答する</button><br>
+        <h3 style="margin:0 0 10px;color:#524130;" id="quizTitle">🔍 穴埋め問題</h3>
+        <div class="quiz-sentence" id="quizSentence"></div>
+        <div class="quiz-choices" id="quizChoices"></div>
         <button class="modal-cancel-btn" onclick="closeQuiz()">やめる</button>
     </div>
 </div>
@@ -854,56 +871,56 @@
 
     /* ========== QUIZ DATA ========== */
     const quizList = {
-        1:  { meaning: "二重線/複線",                                                                                    answer: "a double line" },
-        2:  { meaning: "〜からはほど遠い/まったく違うもの/月とすっぽん",                                               answer: "a far cry from" },
-        3:  { meaning: "職業/身分/社会階層/あらゆる歩み/人生の道のり",                                                  answer: "a walk of life" },
-        4:  { meaning: "〜を捨てる/あきらめる/見捨てる/〜を置き去りにする/（計画などを）中止する",                     answer: "abandon" },
-        5:  { meaning: "異常/異常性/変形/異常現象",                                                                      answer: "abnormality" },
-        6:  { meaning: "〜を廃止する/（法律などを）なくす/撤廃する",                                                    answer: "abolish" },
-        7:  { meaning: "絶対的な/完全な/無条件の/決定的な",                                                              answer: "absolute" },
-        8:  { meaning: "〜を吸収する/夢中にさせる/（衝撃などを）和らげる/（知識を）吸い上げる",                        answer: "absorb" },
-        9:  { meaning: "豊富な/大量の/富んだ/満ちあふれた",                                                              answer: "abundant" },
-        10: { meaning: "近づきやすい/利用しやすい/理解しやすい/（人柄が）気さくな/交通の便が良い",                     answer: "accessible" },
-        11: { meaning: "達成/実績/才能/成果/教養/芸事",                                                                  answer: "accomplishment" },
-        12: { meaning: "〜を説明する/〜の割合を占める/〜の原因となる/〜の責任を負う/（行方などを）確認する",           answer: "account for" },
-        13: { meaning: "〜を達成する/成し遂げる/（目的を）果たす/得る",                                                  answer: "achieve" },
-        14: { meaning: "達成/成就/業績/偉業/成果",                                                                       answer: "achievement" },
-        15: { meaning: "酸/酸性の/酸味のある/（言葉などが）痛烈な/辛辣な",                                             answer: "acid" },
-        16: { meaning: "〜を獲得する/身につける/（会社などを）買収する/手に入れる",                                     answer: "acquire" },
-        17: { meaning: "〜を適応させる/合わせる/慣れる/（小説などを）改変する/脚色する",                               answer: "adapt" },
-        18: { meaning: "適応/順応/改作/脚色/翻案",                                                                       answer: "adaptation" },
-        19: { meaning: "〜を増やす/加える/〜を増大させる",                                                               answer: "add to" },
-        20: { meaning: "これに加えて/さらに言えば/おまけに",                                                             answer: "add to this" },
-        21: { meaning: "〜に話しかける/（問題に）取り組む/住所/演説/〜に宛名を書く",                                   answer: "address" },
-        22: { meaning: "〜を調整する/合わせる/慣れる/（姿勢などを）正す/（保険金を）査定する",                        answer: "adjust" },
-        23: { meaning: "行政/管理/政府/経営/運営/政権/（薬の）投与",                                                    answer: "administration" },
-        24: { meaning: "感嘆/賞賛/憧れ/賛美",                                                                            answer: "admiration" },
-        25: { meaning: "明らかに/誰もが認めるように/言いにくいが/確かに",                                               answer: "admittedly" },
-        26: { meaning: "〜を採用する/（養子に）迎える/（方針などを）選ぶ/（法案を）可決する",                         answer: "adopt" },
-        27: { meaning: "採用/養子縁組/選定/可決",                                                                        answer: "adoption" },
-        28: { meaning: "〜を主張する/支持する/擁護者/代弁者/弁護士/〜を勧める",                                        answer: "advocate" },
-        29: { meaning: "〜に影響を与える/作用する/（病気が人・体を）冒す/〜の心を動かす/〜の振りをる",               answer: "affect" },
-        30: { meaning: "手頃な/購入しやすい/安価な/無理のない",                                                          answer: "affordable" },
-        31: { meaning: "動揺した/興奮した/動転した/波立った",                                                            answer: "agitated" },
-        32: { meaning: "農業の/農作の/農学の/土地の",                                                                    answer: "agricultural" },
-        33: { meaning: "警戒/用心深さ/機敏さ/覚醒（状態）",                                                             answer: "alertness" },
-        34: { meaning: "同盟を結んだ/関連した/連合した/同類の",                                                          answer: "allied" },
-        35: { meaning: "〜と並んで/〜と一緒に/〜のそばに/〜と同時に",                                                   answer: "alongside" },
-        36: { meaning: "代わりの/選択肢/二者択一の/オルタナティブな/既存のものに代わる",                               answer: "alternative" },
-        37: { meaning: "アルミニウムの/アルミ製の",                                                                      answer: "aluminum" },
-        38: { meaning: "素人くさい/下手な/未熟な/アマチュアらしい",                                                     answer: "amateurish" },
-        39: { meaning: "アミノ酸",                                                                                       answer: "amino acid" },
-        40: { meaning: "〜を楽しませる/面白がらせる/（時間を）つぶさせる",                                              answer: "amuse" },
-        41: { meaning: "釣り人/（特に）竿釣り師",                                                                        answer: "angler" },
-        42: { meaning: "苦痛/苦悩/悲痛/激痛/悶え",                                                                      answer: "anguish" },
-        43: { meaning: "動物行動学者/動物行動主義者",                                                                    answer: "animal behaviorist" },
-        44: { meaning: "抗菌の/防腐の/抗菌剤/抗菌ペプチド",                                                             answer: "antibacterial" },
-        45: { meaning: "期待/予想/先取り/楽しみにして待つこと/予期",                                                    answer: "anticipation" },
-        46: { meaning: "明白な/一見〜らしい/見かけ上の/表面的な",                                                       answer: "apparent" },
-        47: { meaning: "〜を求める/〜に訴えかける/〜を懇願する/〜を要請する",                                           answer: "appeal for" },
-        48: { meaning: "応募者/志願者/申請者/受験生",                                                                    answer: "applicant" },
-        49: { meaning: "〜に適用される/〜に当てはまる/〜に申し込む/〜に宛てる/〜に塗る",                              answer: "apply to" },
-        50: { meaning: "適切な/ふさわしい/固有の/〜に特有の/〜を私物化する/〜を予算に計上する",                       answer: "appropriate" }
+        1:  { meaning: "二重線/複線",                                                                                    answer: "a double line",         example: "The teacher drew ___ on the board to mark the end of the section." },
+        2:  { meaning: "〜からはほど遠い/まったく違うもの/月とすっぽん",                                               answer: "a far cry from",        example: "The final result was ___ what we had originally planned." },
+        3:  { meaning: "職業/身分/社会階層/あらゆる歩み/人生の道のり",                                                  answer: "a walk of life",        example: "People from every ___ gathered at the community festival." },
+        4:  { meaning: "〜を捨てる/あきらめる/見捨てる/〜を置き去りにする/（計画などを）中止する",                     answer: "abandon",               example: "The captain had no choice but to ___ the sinking ship." },
+        5:  { meaning: "異常/異常性/変形/異常現象",                                                                      answer: "abnormality",           example: "The test results revealed a slight ___ in her blood pressure." },
+        6:  { meaning: "〜を廃止する/（法律などを）なくす/撤廃する",                                                    answer: "abolish",               example: "The government decided to ___ the outdated law." },
+        7:  { meaning: "絶対的な/完全な/無条件の/決定的な",                                                              answer: "absolute",              example: "The judge's decision was ___, leaving no room for appeal." },
+        8:  { meaning: "〜を吸収する/夢中にさせる/（衝撃などを）和らげる/（知識を）吸い上げる",                        answer: "absorb",                example: "Plants ___ carbon dioxide from the air during photosynthesis." },
+        9:  { meaning: "豊富な/大量の/富んだ/満ちあふれた",                                                              answer: "abundant",              example: "The river was ___ with fish after the long rainy season." },
+        10: { meaning: "近づきやすい/利用しやすい/理解しやすい/（人柄が）気さくな/交通の便が良い",                     answer: "accessible",            example: "The museum was made ___ to visitors in wheelchairs." },
+        11: { meaning: "達成/実績/才能/成果/教養/芸事",                                                                  answer: "accomplishment",        example: "Graduating from university was her greatest ___." },
+        12: { meaning: "〜を説明する/〜の割合を占める/〜の原因となる/〜の責任を負う/（行方などを）確認する",           answer: "account for",           example: "Can you ___ the missing funds in the budget?" },
+        13: { meaning: "〜を達成する/成し遂げる/（目的を）果たす/得る",                                                  answer: "achieve",               example: "She worked hard to ___ her dream of becoming a doctor." },
+        14: { meaning: "達成/成就/業績/偉業/成果",                                                                       answer: "achievement",           example: "Winning the championship was a remarkable ___ for the young team." },
+        15: { meaning: "酸/酸性の/酸味のある/（言葉などが）痛烈な/辛辣な",                                             answer: "acid",                  example: "The scientist tested whether the liquid was an ___ or a base." },
+        16: { meaning: "〜を獲得する/身につける/（会社などを）買収する/手に入れる",                                     answer: "acquire",               example: "The company plans to ___ a smaller competitor next year." },
+        17: { meaning: "〜を適応させる/合わせる/慣れる/（小説などを）改変する/脚色する",                               answer: "adapt",                 example: "It took weeks for him to ___ to the new environment." },
+        18: { meaning: "適応/順応/改作/脚色/翻案",                                                                       answer: "adaptation",            example: "The film is an ___ of a bestselling novel from the 1990s." },
+        19: { meaning: "〜を増やす/加える/〜を増大させる",                                                               answer: "add to",                example: "The unexpected storm only served to ___ their troubles." },
+        20: { meaning: "これに加えて/さらに言えば/おまけに",                                                             answer: "add to this",           example: "___ the fact that the train was late, and you can see why we missed the meeting." },
+        21: { meaning: "〜に話しかける/（問題に）取り組む/住所/演説/〜に宛名を書く",                                   answer: "address",               example: "The president will ___ the nation on television tonight." },
+        22: { meaning: "〜を調整する/合わせる/慣れる/（姿勢などを）正す/（保険金を）査定する",                        answer: "adjust",                example: "She had to ___ her schedule to fit the new meeting time." },
+        23: { meaning: "行政/管理/政府/経営/運営/政権/（薬の）投与",                                                    answer: "administration",        example: "The school's ___ announced new policies for the upcoming year." },
+        24: { meaning: "感嘆/賞賛/憧れ/賛美",                                                                            answer: "admiration",            example: "He looked at the ancient painting with deep ___." },
+        25: { meaning: "明らかに/誰もが認めるように/言いにくいが/確かに",                                               answer: "admittedly",            example: "___, the plan is risky, but the potential reward is worth it." },
+        26: { meaning: "〜を採用する/（養子に）迎える/（方針などを）選ぶ/（法案を）可決する",                         answer: "adopt",                 example: "The couple decided to ___ a child from overseas." },
+        27: { meaning: "採用/養子縁組/選定/可決",                                                                        answer: "adoption",              example: "The ___ of the new policy was approved by the board of directors." },
+        28: { meaning: "〜を主張する/支持する/擁護者/代弁者/弁護士/〜を勧める",                                        answer: "advocate",              example: "She became a strong ___ for environmental protection in her community." },
+        29: { meaning: "〜に影響を与える/作用する/（病気が人・体を）冒す/〜の心を動かす/〜の振りをする",               answer: "affect",                example: "Lack of sleep can seriously ___ your ability to concentrate." },
+        30: { meaning: "手頃な/購入しやすい/安価な/無理のない",                                                          answer: "affordable",            example: "They were looking for an ___ apartment in the city center." },
+        31: { meaning: "動揺した/興奮した/動転した/波立った",                                                            answer: "agitated",              example: "The speaker became visibly ___ when asked about the scandal." },
+        32: { meaning: "農業の/農作の/農学の/土地の",                                                                    answer: "agricultural",          example: "This region is well known for its ___ products, especially high-quality rice." },
+        33: { meaning: "警戒/用心深さ/機敏さ/覚醒（状態）",                                                             answer: "alertness",             example: "The security guard's ___ prevented a break-in at the warehouse." },
+        34: { meaning: "同盟を結んだ/関連した/連合した/同類の",                                                          answer: "allied",                example: "The ___ forces worked together to defeat their common enemy." },
+        35: { meaning: "〜と並んで/〜と一緒に/〜のそばに/〜と同時に",                                                   answer: "alongside",             example: "She worked ___ her mentor for three years before leading her own team." },
+        36: { meaning: "代わりの/選択肢/二者択一の/オルタナティブな/既存のものに代わる",                               answer: "alternative",           example: "If the main road is blocked, we will need to find an ___ route." },
+        37: { meaning: "アルミニウムの/アルミ製の",                                                                      answer: "aluminum",              example: "The bicycle frame was made of a lightweight ___ alloy." },
+        38: { meaning: "素人くさい/下手な/未熟な/アマチュアらしい",                                                     answer: "amateurish",            example: "The performance was criticized for looking ___ and poorly rehearsed." },
+        39: { meaning: "アミノ酸",                                                                                       answer: "amino acid",            example: "Proteins are made up of long chains of ___." },
+        40: { meaning: "〜を楽しませる/面白がらせる/（時間を）つぶさせる",                                              answer: "amuse",                 example: "The magician's clever tricks never failed to ___ the audience." },
+        41: { meaning: "釣り人/（特に）竿釣り師",                                                                        answer: "angler",                example: "The ___ waited patiently for hours at the edge of the quiet river." },
+        42: { meaning: "苦痛/苦悩/悲痛/激痛/悶え",                                                                      answer: "anguish",               example: "She cried out in ___ when she received the terrible news." },
+        43: { meaning: "動物行動学者/動物行動主義者",                                                                    answer: "animal behaviorist",    example: "The ___ spent years studying the social habits of wild chimpanzees." },
+        44: { meaning: "抗菌の/防腐の/抗菌剤/抗菌ペプチド",                                                             answer: "antibacterial",         example: "The soap contained ___ agents that help prevent infection." },
+        45: { meaning: "期待/予想/先取り/楽しみにして待つこと/予期",                                                    answer: "anticipation",          example: "The children waited in ___ for the presents to be unwrapped." },
+        46: { meaning: "明白な/一見〜らしい/見かけ上の/表面的な",                                                       answer: "apparent",              example: "It was ___ from his expression that he was not happy with the decision." },
+        47: { meaning: "〜を求める/〜に訴えかける/〜を懇願する/〜を要請する",                                           answer: "appeal for",            example: "The charity decided to ___ donations following the devastating disaster." },
+        48: { meaning: "応募者/志願者/申請者/受験生",                                                                    answer: "applicant",             example: "Each ___ was required to submit a written essay along with their application form." },
+        49: { meaning: "〜に適用される/〜に当てはまる/〜に申し込む/〜に宛てる/〜に塗る",                              answer: "apply to",              example: "The same rules ___ all students, regardless of their grade level." },
+        50: { meaning: "適切な/ふさわしい/固有の/〜に特有の/〜を私物化する/〜を予算に計上する",                       answer: "appropriate",           example: "Please wear ___ clothing for the formal ceremony this evening." }
     };
 
     /* ========== CARD DATA ========== */
@@ -1437,8 +1454,7 @@
             if (unlockedCards.includes(foundCard.id)) { alert(`No.${foundCard.no} のカードはすでに持っています！`); return; }
             gachaSession.isGachaMode = false;
             currentSingleCard = foundCard;
-            document.getElementById('quizTitle').innerText = "日本語の意味を書きなさい。";
-            document.getElementById('quizSubmitBtn').innerText = "解答する";
+            document.getElementById('quizTitle').innerText = "🔍 穴埋め問題";
             showQuiz(foundCard);
         } else {
             alert("これは有効なトレカのQRコードではありません。");
@@ -1459,7 +1475,6 @@
         gachaSession.selectedCard = randomCard;
         gachaSession.userAnswer = "";
         document.getElementById('quizTitle').innerText = "🔥 ガチャクイズチャレンジ";
-        document.getElementById('quizSubmitBtn').innerText = "結果を見る！";
         showQuiz(randomCard);
     }
 
@@ -1470,10 +1485,39 @@
 
     /* ========== QUIZ DISPLAY ========== */
     function showQuiz(card) {
-        document.getElementById('quizEnglish').innerText = card.quiz.answer;
-        document.getElementById('answerInput').value = '';
+        // 例文の（　　）をマークアップしてセット
+        const sentence = (card.quiz.example || "___").replace(/___/g,
+            '<span class="quiz-blank">（　　）</span>');
+        document.getElementById('quizSentence').innerHTML = sentence;
+
+        // 選択肢を生成（正解1 + 不正解3 = 計4択）
+        const correctAnswer = card.quiz.answer;
+        const allAnswers = Object.values(quizList)
+            .map(q => q.answer)
+            .filter(a => a !== correctAnswer);
+        // シャッフルして3つ抽出
+        for (let i = allAnswers.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [allAnswers[i], allAnswers[j]] = [allAnswers[j], allAnswers[i]];
+        }
+        const choices = [correctAnswer, ...allAnswers.slice(0, 3)];
+        // 選択肢をシャッフル
+        for (let i = choices.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [choices[i], choices[j]] = [choices[j], choices[i]];
+        }
+
+        const choicesEl = document.getElementById('quizChoices');
+        choicesEl.innerHTML = '';
+        choices.forEach(ans => {
+            const btn = document.createElement('button');
+            btn.className = 'quiz-choice-btn';
+            btn.textContent = ans;
+            btn.onclick = () => submitChoice(ans === correctAnswer, card, ans, btn);
+            choicesEl.appendChild(btn);
+        });
+
         document.getElementById('quiz-overlay').style.display = 'flex';
-        setTimeout(() => document.getElementById('answerInput').focus(), 100);
     }
     function closeQuiz() {
         document.getElementById('quiz-overlay').style.display = 'none';
@@ -1498,40 +1542,49 @@
         });
     }
 
-    /* ========== SUBMIT ANSWER ========== */
-    function submitAnswer() {
-        const userInput = document.getElementById('answerInput').value;
-        document.getElementById('quiz-overlay').style.display = 'none';
+    /* ========== SUBMIT CHOICE (4択穴埋め) ========== */
+    function submitChoice(isCorrect, card, selectedAnswer, btnEl) {
+        // ボタン全体を無効化（二重タップ防止）
+        document.querySelectorAll('.quiz-choice-btn').forEach(b => b.disabled = true);
+        btnEl.classList.add(isCorrect ? 'correct' : 'wrong');
 
-        if (gachaSession.isGachaMode) {
-            dailyGachaStorage.count = Math.max(0, dailyGachaStorage.count - 1);
-            localStorage.setItem('dailyGachaStorage', JSON.stringify(dailyGachaStorage));
-            checkAndResetDailyGacha();
-            evaluateAndShowGachaResult(userInput);
-        } else {
-            const isCorrect = validateAnswer(userInput, currentSingleCard.quiz.meaning);
-            updateCombo(isCorrect);
-            if (isCorrect) {
-                alert("正解！カードをゲットしたよ！");
-                jumpToCardTab(currentSingleCard.no);
-                startSingleGet(currentSingleCard);
-            } else {
-                const primaryAns = currentSingleCard.quiz.meaning.split("/")[0];
-                alert(`残念！正解は「${primaryAns}」などでした。また挑戦してね！`);
-            }
-            currentSingleCard = null;
+        // 不正解時は正解ボタンを緑に
+        if (!isCorrect) {
+            document.querySelectorAll('.quiz-choice-btn').forEach(b => {
+                if (b.textContent === card.quiz.answer) b.classList.add('correct');
+            });
         }
+
+        setTimeout(() => {
+            document.getElementById('quiz-overlay').style.display = 'none';
+
+            if (gachaSession.isGachaMode) {
+                dailyGachaStorage.count = Math.max(0, dailyGachaStorage.count - 1);
+                localStorage.setItem('dailyGachaStorage', JSON.stringify(dailyGachaStorage));
+                checkAndResetDailyGacha();
+                evaluateAndShowGachaResult(isCorrect);
+            } else {
+                updateCombo(isCorrect);
+                if (isCorrect) {
+                    alert("正解！カードをゲットしたよ！");
+                    jumpToCardTab(currentSingleCard.no);
+                    startSingleGet(currentSingleCard);
+                } else {
+                    alert(`残念！正解は「${card.quiz.answer}」でした。また挑戦してね！`);
+                }
+                currentSingleCard = null;
+            }
+        }, 700);
     }
 
     /* ========== GACHA RESULT (with rarity) ========== */
-    function evaluateAndShowGachaResult(userInput) {
+    function evaluateAndShowGachaResult(isCorrect) {
         const container = document.getElementById('gachaContainer');
         container.innerHTML = '';
         document.getElementById('gachaCloseBtn').style.display = 'none';
         document.getElementById('gacha-overlay').style.display = 'flex';
 
         const card = gachaSession.selectedCard;
-        const isCorrect = validateAnswer(userInput, card.quiz.meaning);
 
         updateCombo(isCorrect);
 
@@ -1617,7 +1670,7 @@
     }
 
     /* ========== KEYBOARD SHORTCUTS ========== */
-    document.getElementById('answerInput').addEventListener('keypress', e => { if (e.key === 'Enter') submitAnswer(); });
+    // (answerInput removed — quiz now uses 4-choice buttons)
     document.getElementById('couponInput').addEventListener('keypress', e => { if (e.key === 'Enter') submitCoupon(); });
 
     /* ========== INIT ========== */
