@@ -3,13 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ハイレベル英単語図鑑</title>
+    <title>言の葉堂のひみつ手帖 ｜ 金の手帖</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
+        /* ===== KOTONOHA-DO SERIES DESIGN SYSTEM =====
+         *  言の葉堂のひみつ手帖 — CSS変数でシリーズ統一
+         *  青の手帖: --s-primary:#3060c0  --s-accent:#7090e8  --s-glow:rgba(60,100,200,0.4)
+         *  銀の手帖: --s-primary:#8898b0  --s-accent:#c0d0e0  --s-glow:rgba(140,160,180,0.35)
+         *  金の手帖: --s-primary:#b88a18  --s-accent:#e8d070  --s-glow:rgba(200,160,40,0.45)
+         * ===================================================== */
+        :root {
+            /* 金の手帖カラー */
+            --s-primary:   #b88a18;
+            --s-accent:    #e8d070;
+            --s-bright:    #f5e080;
+            --s-glow:      rgba(200,160,40,0.45);
+            --s-glow-dim:  rgba(160,120,20,0.18);
+            --s-panel-bg:  rgba(10,7,30,0.93);
+            --s-border:    rgba(200,165,50,0.58);
+        }
+
         /* ===== MAGICAL NIGHT ATMOSPHERE (Ghibli × Harry Potter) ===== */
         * { box-sizing: border-box; }
 
@@ -172,44 +189,102 @@
         }
 
         /* ===== HEADER ===== */
+        /* ===== HEADER: 言の葉堂 ===== */
         .header-plate {
             background: linear-gradient(160deg,
-                rgba(10,6,32,0.94) 0%,
-                rgba(14,9,42,0.96) 50%,
-                rgba(8,14,28,0.94) 100%);
-            border: 1px solid rgba(200,165,50,0.6);
-            border-radius: 18px;
-            padding: 16px 30px 18px;
+                rgba(10,7,28,0.96) 0%,
+                rgba(16,10,40,0.97) 50%,
+                rgba(10,12,26,0.96) 100%);
+            border: 1px solid var(--s-border);
+            border-radius: 20px;
+            padding: 18px 28px 20px;
             text-align: center;
             box-shadow:
-                0 8px 32px rgba(0,0,0,0.6),
-                0 0 0 1px rgba(100,80,20,0.2),
-                0 0 50px rgba(180,140,30,0.1),
-                inset 0 1px 0 rgba(220,180,60,0.2),
-                inset 0 -1px 0 rgba(100,70,10,0.15);
-            backdrop-filter: blur(10px);
+                0 10px 40px rgba(0,0,0,0.65),
+                0 0 0 1px rgba(80,60,10,0.25),
+                0 0 60px var(--s-glow-dim),
+                inset 0 1px 0 rgba(230,200,70,0.22),
+                inset 0 -1px 0 rgba(120,80,10,0.18);
+            backdrop-filter: blur(12px);
             margin-bottom: 25px;
             width: 90%; max-width: 450px;
             position: relative; z-index: 2;
         }
-        /* Ornamental corner decorations */
+        /* 角の装飾 */
         .header-plate::before,
         .header-plate::after {
-            content: '✦';
-            position: absolute; top: 10px;
-            font-size: 10px; color: rgba(200,165,50,0.5);
+            content: '❧';
+            position: absolute; top: 12px;
+            font-size: 13px; color: rgba(210,170,50,0.45);
             line-height: 1;
         }
-        .header-plate::before { left: 14px; }
-        .header-plate::after  { right: 14px; }
+        .header-plate::before { left: 16px; }
+        .header-plate::after  { right: 16px; transform: scaleX(-1); }
+
+        /* シリーズ名 */
+        .series-name {
+            font-size: 10px; letter-spacing: 0.22em;
+            color: rgba(220,185,80,0.6);
+            font-family: 'Noto Serif JP', serif;
+            margin: 0 0 6px; text-transform: uppercase;
+        }
+        /* 区切り線 */
+        .series-divider {
+            display: flex; align-items: center; gap: 8px;
+            margin: 0 0 10px;
+        }
+        .series-divider::before,
+        .series-divider::after {
+            content: '';
+            flex: 1; height: 1px;
+            background: linear-gradient(to right, transparent, rgba(200,165,40,0.4), transparent);
+        }
+        .series-divider span { color: rgba(210,175,60,0.55); font-size: 10px; }
+
+        /* 手帖タイトル（金グラデーション） */
         h1 {
-            color: #e8d070; margin: 0 0 5px 0; font-size: 24px;
-            font-family: 'Noto Serif JP', serif; font-weight: 700;
-            letter-spacing: 0.06em;
-            text-shadow:
-                0 0 20px rgba(220,180,50,0.55),
-                0 0 40px rgba(180,140,30,0.2),
-                0 1px 3px rgba(0,0,0,0.6);
+            margin: 0 0 4px;
+            font-size: 34px;
+            font-family: 'Noto Serif JP', serif;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            background: linear-gradient(180deg,
+                #f5e285 0%, #d4980c 35%, #e8c030 55%, #f0d860 80%, #c8900a 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 12px rgba(220,175,40,0.65))
+                    drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+        }
+        /* サブタイトル */
+        .book-subtitle {
+            font-size: 11px; color: rgba(220,185,80,0.72);
+            letter-spacing: 0.14em;
+            font-family: 'Noto Serif JP', serif;
+            margin: 0 0 12px;
+        }
+        /* シリーズインジケーター */
+        .series-indicator {
+            display: flex; justify-content: center; align-items: center;
+            gap: 10px; margin: 0 0 14px;
+        }
+        .series-dot {
+            width: 30px; height: 30px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; font-weight: bold;
+            font-family: 'Noto Serif JP', serif;
+            transition: all 0.2s;
+        }
+        .series-dot.inactive {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.28);
+        }
+        .series-dot.active-gold {
+            background: linear-gradient(135deg, #7a5808, #c89018, #e8c030, #a06c10);
+            border: 1px solid rgba(240,210,80,0.7);
+            color: #fff8d0;
+            box-shadow: 0 0 14px rgba(210,165,35,0.6), 0 0 28px rgba(180,130,20,0.25);
+            font-size: 13px;
         }
         .counter { font-size: 18px; color: #c8a060; margin: 0 0 10px 0; font-weight: bold; }
 
@@ -930,7 +1005,16 @@
 </div>
 
 <div class="header-plate">
-    <h1>ハイレベル英単語図鑑</h1>
+    <!-- 言の葉堂のひみつ手帖 シリーズヘッダー -->
+    <div class="series-name">言の葉堂のひみつ手帖</div>
+    <div class="series-divider"><span>✦</span></div>
+    <h1>金の手帖</h1>
+    <div class="book-subtitle">世界をひもとく　難関の英単語</div>
+    <div class="series-indicator">
+        <div class="series-dot inactive" title="青の手帖：日常を彩る 魔法の英単語">青</div>
+        <div class="series-dot inactive" title="銀の手帖：知性を磨く 上級の英単語">銀</div>
+        <div class="series-dot active-gold" title="金の手帖：世界をひもとく 難関の英単語">★</div>
+    </div>
     <div class="counter" id="collectionCounter">0 / 50</div>
     <div class="header-info-row">
         <div class="gacha-limit-info" id="gachaLimitInfo">本日のガチャ残り: 1回</div>
