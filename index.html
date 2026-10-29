@@ -460,6 +460,215 @@
         .streak-day-label { font-size: 32px; font-weight: bold; color: #8a4010; margin: 0 0 6px 0; font-family: 'Noto Serif JP', serif; }
         .streak-bonus-msg { font-size: 19px; font-weight: bold; color: #3a2a14; margin: 0 0 5px 0; }
         .streak-bonus-sub { font-size: 13px; color: #7a6a50; margin: 0 0 18px 0; }
+
+        /* ===== XP / LEVEL BADGE ===== */
+        .xp-level-row {
+            display: flex; align-items: center; gap: 10px;
+            justify-content: center; margin-top: 8px;
+        }
+        .level-badge {
+            font-size: 13px; font-weight: bold; color: #1a0a30;
+            background: linear-gradient(135deg, #f0c840, #c89820);
+            padding: 4px 12px; border-radius: 20px;
+            border: 1px solid #a07010;
+            box-shadow: 0 2px 8px rgba(200,160,30,0.4);
+            font-family: 'EB Garamond', serif;
+            white-space: nowrap;
+        }
+        .xp-bar-wrap {
+            flex: 1; max-width: 160px; height: 10px;
+            background: rgba(255,255,255,0.1); border-radius: 5px;
+            border: 1px solid rgba(200,160,30,0.3); overflow: hidden;
+        }
+        .xp-bar-fill {
+            height: 100%; background: linear-gradient(90deg, #c89820, #f0e050);
+            border-radius: 5px; transition: width 0.4s ease;
+        }
+        .xp-label {
+            font-size: 11px; color: #c8a060; white-space: nowrap;
+        }
+
+        /* ===== DAILY GOAL BAR ===== */
+        .daily-goal-wrap {
+            margin-top: 10px; padding: 0 4px;
+        }
+        .daily-goal-label {
+            font-size: 12px; color: #c8d0e8; margin-bottom: 4px;
+            display: flex; justify-content: space-between;
+        }
+        .daily-goal-bar-bg {
+            height: 8px; background: rgba(255,255,255,0.1);
+            border-radius: 4px; border: 1px solid rgba(140,180,255,0.2); overflow: hidden;
+        }
+        .daily-goal-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3060a0, #60a0ff);
+            border-radius: 4px; transition: width 0.5s ease;
+        }
+        .daily-goal-bar-fill.complete {
+            background: linear-gradient(90deg, #208050, #40d090);
+        }
+
+        /* ===== STUDY MODE (TikTok 式) ===== */
+        #study-overlay {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(ellipse at 50% 40%, #12083a 0%, #080520 60%, #030310 100%);
+            z-index: 40; flex-direction: column;
+            justify-content: flex-start; align-items: center;
+            overflow: hidden;
+        }
+        .study-header {
+            width: 100%; padding: 14px 18px 10px;
+            display: flex; align-items: center; justify-content: space-between;
+            background: rgba(0,0,0,0.3);
+        }
+        .study-mode-title {
+            color: #c8a060; font-size: 15px; font-weight: bold;
+            font-family: 'Noto Serif JP', serif;
+        }
+        .study-progress-text {
+            color: #a090c0; font-size: 13px; font-family: 'Noto Serif JP', serif;
+        }
+        .study-close-btn {
+            background: none; border: none; color: #c0b0d0;
+            font-size: 22px; cursor: pointer; line-height: 1;
+        }
+        .study-card-area {
+            flex: 1; width: 100%; display: flex;
+            flex-direction: column; justify-content: center; align-items: center;
+            padding: 10px 20px; perspective: 1000px;
+        }
+        .study-flip-card {
+            width: 100%; max-width: 340px;
+            height: 420px; transform-style: preserve-3d;
+            transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer; position: relative;
+        }
+        .study-flip-card.flipped { transform: rotateY(180deg); }
+        .study-face {
+            position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
+            border-radius: 20px; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;
+        }
+        .study-face-front {
+            background: linear-gradient(160deg, #1e1638 0%, #100c28 100%);
+            border: 2px solid #5a4890;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 30px rgba(80,60,160,0.15);
+        }
+        .study-card-img-wrap {
+            width: 100%; max-height: 220px; overflow: hidden;
+            border-radius: 12px; margin-bottom: 18px;
+        }
+        .study-card-img { width: 100%; height: auto; display: block; border-radius: 12px; }
+        .study-english-word {
+            font-size: 26px; font-weight: bold; color: #e8d8ff;
+            font-family: 'EB Garamond', serif; font-style: italic;
+            letter-spacing: 0.04em; text-align: center;
+            text-shadow: 0 0 20px rgba(160,120,255,0.4);
+        }
+        .study-tap-hint {
+            font-size: 12px; color: #7060a0; margin-top: 12px;
+            font-family: 'Noto Serif JP', serif;
+        }
+        .study-face-back {
+            background: linear-gradient(160deg, #f4f0fa 0%, #ede8f8 100%);
+            border: 2px solid #9a7a3a;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+            transform: rotateY(180deg);
+        }
+        .study-meaning {
+            font-size: 18px; color: #2a1a50; font-weight: bold;
+            text-align: center; font-family: 'Noto Serif JP', serif;
+            line-height: 1.6; margin-bottom: 14px;
+        }
+        .study-example {
+            font-size: 13px; color: #4a3a70; text-align: center;
+            font-family: 'Noto Serif JP', serif; line-height: 1.5;
+            background: rgba(100,80,180,0.08); border-radius: 8px;
+            padding: 8px 12px;
+        }
+        .study-face-back .study-english-word {
+            color: #3a2a70; font-size: 20px; margin-bottom: 10px;
+        }
+        .study-assessment {
+            display: flex; gap: 16px; margin-top: 6px; padding: 14px 20px;
+            width: 100%; max-width: 340px; justify-content: center;
+        }
+        .study-btn-know {
+            flex: 1; padding: 16px; font-size: 18px; font-weight: bold;
+            background: linear-gradient(#1a7a40, #0f5028); color: #e0ffe8;
+            border: 2px solid #0a4020; border-radius: 14px; cursor: pointer;
+            font-family: 'Noto Serif JP', serif;
+            box-shadow: 0 4px 16px rgba(20,100,50,0.4);
+            transition: transform 0.15s;
+        }
+        .study-btn-know:active { transform: scale(0.95); }
+        .study-btn-again {
+            flex: 1; padding: 16px; font-size: 18px; font-weight: bold;
+            background: linear-gradient(#8a1a1a, #5a0f0f); color: #ffe0e0;
+            border: 2px solid #400a0a; border-radius: 14px; cursor: pointer;
+            font-family: 'Noto Serif JP', serif;
+            box-shadow: 0 4px 16px rgba(120,20,20,0.4);
+            transition: transform 0.15s;
+        }
+        .study-btn-again:active { transform: scale(0.95); }
+        .study-assessment.hidden { opacity: 0; pointer-events: none; }
+        .study-nav-row {
+            display: flex; gap: 20px; padding: 8px 20px 20px;
+            justify-content: center; align-items: center;
+        }
+        .study-nav-btn {
+            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+            color: #a090c0; font-size: 22px; padding: 8px 22px;
+            border-radius: 10px; cursor: pointer; font-family: 'Noto Serif JP', serif;
+        }
+        .study-card-counter {
+            color: #7060a0; font-size: 13px; font-family: 'Noto Serif JP', serif;
+        }
+        /* Level up toast */
+        .levelup-toast {
+            position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+            background: linear-gradient(135deg, #c89820, #f0c840);
+            color: #1a0a20; padding: 12px 28px; border-radius: 30px;
+            font-size: 16px; font-weight: bold; font-family: 'Noto Serif JP', serif;
+            box-shadow: 0 6px 24px rgba(200,160,30,0.5);
+            z-index: 100; opacity: 0; pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .levelup-toast.show { opacity: 1; }
+        /* XP flash */
+        @keyframes xpFloat {
+            0%   { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-40px); opacity: 0; }
+        }
+        .xp-float {
+            position: fixed; pointer-events: none; z-index: 100;
+            font-size: 15px; font-weight: bold; color: #f0c840;
+            font-family: 'EB Garamond', serif;
+            animation: xpFloat 1.2s ease-out forwards;
+        }
+        /* Study complete screen */
+        .study-complete {
+            display: none; flex-direction: column; align-items: center;
+            justify-content: center; height: 100%; padding: 30px;
+            text-align: center;
+        }
+        .study-complete-icon { font-size: 64px; margin-bottom: 16px; }
+        .study-complete-title {
+            font-size: 22px; font-weight: bold; color: #e8d070;
+            font-family: 'Noto Serif JP', serif; margin-bottom: 8px;
+        }
+        .study-complete-sub {
+            font-size: 14px; color: #a090c0; font-family: 'Noto Serif JP', serif;
+            margin-bottom: 24px;
+        }
+        .study-complete-btn {
+            padding: 14px 32px; font-size: 16px; font-weight: bold;
+            background: linear-gradient(#5c4888, #3c2860); color: #f0e8ff;
+            border: 1px solid #281848; border-radius: 25px; cursor: pointer;
+            font-family: 'Noto Serif JP', serif; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
     </style>
 </head>
 <body>
@@ -487,12 +696,29 @@
     <div class="combo-display" id="comboDisplay">
         🔥 <span id="comboCount">0</span>連続正解中！
     </div>
+    <!-- XP / Level -->
+    <div class="xp-level-row" id="xpLevelRow">
+        <div class="level-badge" id="levelBadge">Lv.1 見習い魔法使い</div>
+        <div class="xp-bar-wrap"><div class="xp-bar-fill" id="xpBarFill" style="width:0%"></div></div>
+        <div class="xp-label" id="xpLabel">0 XP</div>
+    </div>
+    <!-- Daily Goal -->
+    <div class="daily-goal-wrap">
+        <div class="daily-goal-label">
+            <span>📚 今日の学習</span>
+            <span id="dailyGoalText">0 / 10枚</span>
+        </div>
+        <div class="daily-goal-bar-bg">
+            <div class="daily-goal-bar-fill" id="dailyGoalFill" style="width:0%"></div>
+        </div>
+    </div>
 </div>
 
 <div class="btn-group">
     <button class="scan-btn" onclick="openCamera()">QRコードをスキャン</button>
     <button class="gacha-btn" id="directGachaBtn" onclick="startGachaViaButton()">デイリーガチャを引く</button>
     <button class="coupon-open-btn" onclick="openCouponModal()">クーポン入力</button>
+    <button class="scan-btn" style="background:linear-gradient(#4a3068,#2a1848);border-color:#1a0838;color:#d8c8ff;" onclick="openStudyMode('all')">📖 学習モード</button>
 </div>
 
 <div class="tabs-container" id="tabsContainer"></div>
@@ -546,6 +772,56 @@
 </div>
 
 <div class="combo-bonus-notice" id="comboBonusNotice"></div>
+<div class="levelup-toast" id="levelupToast">✨ レベルアップ！</div>
+
+<!-- ===== STUDY MODE OVERLAY (TikTok式) ===== -->
+<div id="study-overlay">
+    <div class="study-header">
+        <div class="study-mode-title" id="studyModeTitle">📖 学習モード</div>
+        <div class="study-progress-text" id="studyProgressText">0 / 0</div>
+        <button class="study-close-btn" onclick="closeStudyMode()">✕</button>
+    </div>
+
+    <!-- Main card area -->
+    <div class="study-card-area" id="studyCardArea">
+        <div class="study-flip-card" id="studyFlipCard" onclick="onStudyCardTap()">
+            <!-- Front: image + English word -->
+            <div class="study-face study-face-front" id="studyFaceFront">
+                <div class="study-card-img-wrap" id="studyImgWrap">
+                    <img class="study-card-img" id="studyCardImg" src="" alt="">
+                </div>
+                <div class="study-english-word" id="studyEnglishWord"></div>
+                <div class="study-tap-hint">タップして意味を確認 →</div>
+            </div>
+            <!-- Back: meaning -->
+            <div class="study-face study-face-back" id="studyFaceBack">
+                <div class="study-english-word" id="studyEnglishWordBack"></div>
+                <div class="study-meaning" id="studyMeaning"></div>
+            </div>
+        </div>
+
+        <!-- Complete screen -->
+        <div class="study-complete" id="studyComplete">
+            <div class="study-complete-icon">🎓</div>
+            <div class="study-complete-title" id="studyCompleteTitle">学習完了！</div>
+            <div class="study-complete-sub" id="studyCompleteSub"></div>
+            <button class="study-complete-btn" onclick="closeStudyMode()">コレクションに戻る</button>
+        </div>
+    </div>
+
+    <!-- ◯/✗ Assessment (shown after flip) -->
+    <div class="study-assessment hidden" id="studyAssessment">
+        <button class="study-btn-again" onclick="assessCard(false)">✗ もう一度</button>
+        <button class="study-btn-know" onclick="assessCard(true)">◯ わかった</button>
+    </div>
+
+    <!-- Prev / Next nav -->
+    <div class="study-nav-row" id="studyNavRow">
+        <button class="study-nav-btn" onclick="studyNavPrev()">← 前</button>
+        <div class="study-card-counter" id="studyCardCounter"></div>
+        <button class="study-nav-btn" onclick="studyNavNext()">次 →</button>
+    </div>
+</div>
 
 <div class="collection-grid" id="collectionGrid"></div>
 
@@ -656,6 +932,220 @@
 
     /* ========== COMBO STATE ========== */
     let comboCount = 0;
+
+    /* ========== XP / LEVEL STATE ========== */
+    const LEVEL_TITLES = [
+        "見習い魔法使い","魔法使いの卵","呪文詠唱者","魔法探求者","秘術の使い手",
+        "魔法騎士","賢者の弟子","星読みの者","月の守護者","大魔法使い",
+        "伝説の魔法使い","魔法界の英雄","世界樹の守者","時空の探求者","不死の賢者"
+    ];
+    const XP_PER_LEVEL = 100;
+
+    let xpData = JSON.parse(localStorage.getItem('xpData')) || { xp: 0, level: 1 };
+
+    function addXP(amount, originEl) {
+        const prevLevel = xpData.level;
+        xpData.xp += amount;
+        while (xpData.xp >= XP_PER_LEVEL) {
+            xpData.xp -= XP_PER_LEVEL;
+            xpData.level++;
+        }
+        localStorage.setItem('xpData', JSON.stringify(xpData));
+        updateXPDisplay();
+        if (xpData.level > prevLevel) showLevelUpToast(xpData.level);
+        if (originEl) spawnXPFloat(`+${amount} XP`, originEl);
+    }
+
+    function updateXPDisplay() {
+        const lv = Math.min(xpData.level, LEVEL_TITLES.length);
+        const title = LEVEL_TITLES[lv - 1] || LEVEL_TITLES[LEVEL_TITLES.length - 1];
+        const el = document.getElementById('levelBadge');
+        const bar = document.getElementById('xpBarFill');
+        const label = document.getElementById('xpLabel');
+        if (el) el.textContent = `Lv.${xpData.level} ${title}`;
+        if (bar) bar.style.width = Math.round((xpData.xp / XP_PER_LEVEL) * 100) + '%';
+        if (label) label.textContent = `${xpData.xp}/${XP_PER_LEVEL} XP`;
+    }
+
+    function showLevelUpToast(lv) {
+        const t = document.getElementById('levelupToast');
+        if (!t) return;
+        const title = LEVEL_TITLES[Math.min(lv, LEVEL_TITLES.length) - 1];
+        t.textContent = `✨ Lv.${lv} ${title} にレベルアップ！`;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2600);
+        confetti({ particleCount: 60, spread: 50, origin: { y: 0.4 } });
+    }
+
+    function spawnXPFloat(text, originEl) {
+        const rect = originEl.getBoundingClientRect();
+        const el = document.createElement('div');
+        el.className = 'xp-float';
+        el.textContent = text;
+        el.style.left = (rect.left + rect.width / 2 - 20) + 'px';
+        el.style.top = (rect.top - 10) + 'px';
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 1300);
+    }
+
+    /* ========== DAILY GOAL STATE ========== */
+    const DAILY_GOAL = 10;
+    let dailyStudyData = JSON.parse(localStorage.getItem('dailyStudyData')) || { date: "", count: 0 };
+
+    function checkDailyStudyReset() {
+        const today = new Date().toLocaleDateString();
+        if (dailyStudyData.date !== today) {
+            dailyStudyData = { date: today, count: 0 };
+            localStorage.setItem('dailyStudyData', JSON.stringify(dailyStudyData));
+        }
+    }
+
+    function incrementDailyStudy() {
+        checkDailyStudyReset();
+        dailyStudyData.count++;
+        localStorage.setItem('dailyStudyData', JSON.stringify(dailyStudyData));
+        updateDailyGoalDisplay();
+        if (dailyStudyData.count === DAILY_GOAL) {
+            setTimeout(() => {
+                confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
+                const n = document.getElementById('comboBonusNotice');
+                if (n) { n.textContent = '🎉 本日の目標達成！素晴らしい！'; n.style.display='block'; setTimeout(()=>n.style.display='none', 2800); }
+            }, 300);
+        }
+    }
+
+    function updateDailyGoalDisplay() {
+        checkDailyStudyReset();
+        const count = dailyStudyData.count;
+        const pct = Math.min(100, Math.round((count / DAILY_GOAL) * 100));
+        const fill = document.getElementById('dailyGoalFill');
+        const txt = document.getElementById('dailyGoalText');
+        if (fill) { fill.style.width = pct + '%'; fill.className = 'daily-goal-bar-fill' + (count >= DAILY_GOAL ? ' complete' : ''); }
+        if (txt) txt.textContent = `${count} / ${DAILY_GOAL}枚`;
+    }
+
+    /* ========== WEAK CARDS (苦手カード) STATE ========== */
+    let weakCards = JSON.parse(localStorage.getItem('weakCards')) || [];
+
+    function markWeak(cardNo) {
+        if (!weakCards.includes(cardNo)) { weakCards.push(cardNo); localStorage.setItem('weakCards', JSON.stringify(weakCards)); }
+    }
+    function unmarkWeak(cardNo) {
+        weakCards = weakCards.filter(n => n !== cardNo);
+        localStorage.setItem('weakCards', JSON.stringify(weakCards));
+    }
+
+    /* ========== STUDY MODE STATE ========== */
+    let studyState = { cards: [], index: 0, flipped: false, mode: 'all' };
+
+    function openStudyMode(mode) {
+        studyState.mode = mode || 'all';
+        let pool;
+        if (mode === 'weak') {
+            pool = cardsData.filter(c => weakCards.includes(c.no) && unlockedCards.includes(c.no));
+            document.getElementById('studyModeTitle').textContent = '⚠️ 苦手カード復習';
+        } else {
+            pool = cardsData.filter(c => unlockedCards.includes(c.no));
+            document.getElementById('studyModeTitle').textContent = '📖 学習モード';
+        }
+        if (pool.length === 0) {
+            alert(mode === 'weak' ? '苦手カードがありません！' : 'まずカードをアンロックしてください！');
+            return;
+        }
+        studyState.cards = pool;
+        studyState.index = 0;
+        studyState.flipped = false;
+        document.getElementById('study-overlay').style.display = 'flex';
+        document.getElementById('studyComplete').style.display = 'none';
+        document.getElementById('studyFlipCard').style.display = '';
+        document.getElementById('studyAssessment').style.display = 'flex';
+        document.getElementById('studyNavRow').style.display = 'flex';
+        renderStudyCard();
+    }
+
+    function closeStudyMode() {
+        document.getElementById('study-overlay').style.display = 'none';
+        renderTabs();
+    }
+
+    function renderStudyCard() {
+        const card = studyState.cards[studyState.index];
+        if (!card) return;
+        studyState.flipped = false;
+        const flipEl = document.getElementById('studyFlipCard');
+        flipEl.classList.remove('flipped');
+
+        // Image
+        document.getElementById('studyCardImg').src = card.img;
+        // English word
+        const eng = card.quiz.answer;
+        document.getElementById('studyEnglishWord').textContent = eng;
+        document.getElementById('studyEnglishWordBack').textContent = eng;
+        // Meaning
+        document.getElementById('studyMeaning').textContent = card.quiz.meaning;
+        // Progress
+        const total = studyState.cards.length;
+        const cur = studyState.index + 1;
+        document.getElementById('studyProgressText').textContent = `${cur} / ${total}`;
+        document.getElementById('studyCardCounter').textContent = `${cur} / ${total}`;
+        // Assessment hidden until flip
+        document.getElementById('studyAssessment').classList.add('hidden');
+        // Weak indicator on front
+        const weakNote = flipEl.querySelector('.weak-note');
+        if (weakNote) weakNote.remove();
+        if (weakCards.includes(card.no)) {
+            const badge = document.createElement('div');
+            badge.className = 'weak-note';
+            badge.style.cssText = 'position:absolute;top:10px;right:10px;background:#8a1a1a;color:#ffe0e0;font-size:11px;padding:3px 8px;border-radius:8px;font-family:Noto Serif JP,serif;';
+            badge.textContent = '⚠️ 苦手';
+            document.getElementById('studyFaceFront').appendChild(badge);
+        }
+    }
+
+    function onStudyCardTap() {
+        if (studyState.flipped) return;
+        studyState.flipped = true;
+        document.getElementById('studyFlipCard').classList.add('flipped');
+        document.getElementById('studyAssessment').classList.remove('hidden');
+    }
+
+    function assessCard(knew) {
+        const card = studyState.cards[studyState.index];
+        if (knew) {
+            unmarkWeak(card.no);
+            addXP(10, document.getElementById('studyAssessment'));
+        } else {
+            markWeak(card.no);
+            addXP(2, document.getElementById('studyAssessment'));
+        }
+        incrementDailyStudy();
+        const next = studyState.index + 1;
+        if (next >= studyState.cards.length) {
+            showStudyComplete();
+        } else {
+            studyState.index = next;
+            renderStudyCard();
+        }
+    }
+
+    function showStudyComplete() {
+        document.getElementById('studyFlipCard').style.display = 'none';
+        document.getElementById('studyAssessment').style.display = 'none';
+        document.getElementById('studyNavRow').style.display = 'none';
+        const weakCount = studyState.cards.filter(c => weakCards.includes(c.no)).length;
+        document.getElementById('studyCompleteTitle').textContent = '学習完了！🎓';
+        document.getElementById('studyCompleteSub').textContent =
+            `全${studyState.cards.length}枚を復習しました。苦手カード: ${weakCount}枚`;
+        document.getElementById('studyComplete').style.display = 'flex';
+        confetti({ particleCount: 100, spread: 60, origin: { y: 0.5 } });
+    }
+
+    function studyNavPrev() {
+        if (studyState.index > 0) { studyState.index--; renderStudyCard(); }
+    }
+    function studyNavNext() {
+        if (studyState.index < studyState.cards.length - 1) { studyState.index++; renderStudyCard(); }
+    }
 
     /* ========== DAILY GACHA RESET ========== */
     function checkAndResetDailyGacha() {
@@ -831,19 +1321,32 @@
     }
 
     /* ========== TABS ========== */
+    let activeTab = 'all'; // 'all' | 'weak'
     function renderTabs() {
         const tabsContainer = document.getElementById('tabsContainer');
         tabsContainer.innerHTML = '';
-        const totalTabs = Math.ceil(TOTAL_CARDS / CARDS_PER_PAGE);
-        if (totalTabs <= 1) return;
-        for (let i = 0; i < totalTabs; i++) {
-            const startNo = i * CARDS_PER_PAGE + 1;
-            const endNo = Math.min((i + 1) * CARDS_PER_PAGE, TOTAL_CARDS);
-            const btn = document.createElement('button');
-            btn.className = `tab-button ${i === currentTabId ? 'active' : ''}`;
-            btn.innerText = `${startNo} 〜 ${endNo}`;
-            btn.onclick = () => { currentTabId = i; renderTabs(); renderCollection(); };
-            tabsContainer.appendChild(btn);
+        // "すべて" tab
+        const allBtn = document.createElement('button');
+        allBtn.className = `tab-button ${activeTab === 'all' ? 'active' : ''}`;
+        allBtn.innerText = `📚 すべて (${unlockedCards.length})`;
+        allBtn.onclick = () => { activeTab = 'all'; renderTabs(); renderCollection(); };
+        tabsContainer.appendChild(allBtn);
+        // "苦手カード" tab
+        const weakCount = weakCards.filter(no => unlockedCards.some(id => id === `card-${no}`)).length;
+        const weakBtn = document.createElement('button');
+        weakBtn.className = `tab-button ${activeTab === 'weak' ? 'active' : ''}`;
+        weakBtn.style.borderColor = activeTab === 'weak' ? '#c04030' : 'rgba(180,80,60,0.4)';
+        weakBtn.innerText = `⚠️ 苦手 (${weakCount})`;
+        weakBtn.onclick = () => { activeTab = 'weak'; renderTabs(); renderCollection(); };
+        tabsContainer.appendChild(weakBtn);
+        // "学習モードで復習" quick-action (weak only)
+        if (activeTab === 'weak' && weakCount > 0) {
+            const studyWeakBtn = document.createElement('button');
+            studyWeakBtn.className = 'tab-button';
+            studyWeakBtn.style.background = 'rgba(60,20,100,0.8)';
+            studyWeakBtn.innerText = '▶ 苦手を学習';
+            studyWeakBtn.onclick = () => openStudyMode('weak');
+            tabsContainer.appendChild(studyWeakBtn);
         }
     }
 
@@ -853,12 +1356,22 @@
         document.getElementById('collectionCounter').innerText = `${unlockedCards.length} / ${TOTAL_CARDS}`;
         const grid = document.getElementById('collectionGrid');
         grid.innerHTML = '';
-        const startIndex = currentTabId * CARDS_PER_PAGE;
-        const currentFilteredCards = cardsData.slice(startIndex, startIndex + CARDS_PER_PAGE);
 
-        currentFilteredCards.forEach(card => {
+        let displayCards;
+        if (activeTab === 'weak') {
+            displayCards = cardsData.filter(c => weakCards.includes(c.no) && unlockedCards.includes(c.id));
+            if (displayCards.length === 0) {
+                grid.innerHTML = '<div style="color:#a090c0;text-align:center;padding:30px;font-size:14px;font-family:Noto Serif JP,serif;grid-column:1/-1;">苦手カードはありません！<br>学習モードで✗をつけたカードがここに表示されます。</div>';
+                return;
+            }
+        } else {
+            displayCards = cardsData;
+        }
+
+        displayCards.forEach(card => {
             const isUnlocked = unlockedCards.includes(card.id);
             const rarity = getRarity(card.no);
+            const isWeak = weakCards.includes(card.no);
             const cardEl = document.createElement('div');
             cardEl.className = `card-container ${isUnlocked ? `card-rarity-${rarity}` : 'locked'}`;
             cardEl.onclick = () => tapCard(card, isUnlocked);
@@ -867,6 +1380,7 @@
                 ? `<div style="position:relative">
                        <img src="${card.img}" alt="No.${card.no}" class="card-img" loading="lazy">
                        <div class="rarity-badge rarity-badge-${rarity}">${rarity}</div>
+                       ${isWeak ? '<div style="position:absolute;bottom:2px;left:2px;background:#8a1a1a;color:#ffe0e0;font-size:9px;padding:2px 5px;border-radius:3px;font-family:Noto Serif JP,serif;">⚠️苦手</div>' : ''}
                    </div>`
                 : `<div class="locked-placeholder">？</div>`;
 
@@ -1107,6 +1621,8 @@
     document.getElementById('couponInput').addEventListener('keypress', e => { if (e.key === 'Enter') submitCoupon(); });
 
     /* ========== INIT ========== */
+    updateXPDisplay();
+    updateDailyGoalDisplay();
     renderTabs();
     renderCollection();
     checkLoginStreak();
