@@ -31,89 +31,94 @@
         * { box-sizing: border-box; }
 
         /*
-         * 背景カラー切り替えガイド（シリーズ別）
-         * 青の手帖: #03060f → #06091e → #090e38 → #0e1248 → #130d45 → #0c1540 → #091530 → #061012 → #041008 → #030a05
-         * 銀の手帖: #070810 → #0e1018 → #141828 → #181e32 → #141830 → #101520 → #0c1018 → #0a0e14 → #080c10 → #06080c
-         * 金の手帖: #060400 → #100900 → #1c1004 → #221408 → #1e1006 → #180e06 → #120a04 → #0a0802 → #080602 → #050401
+         * 空グラデーション（シリーズ別 — 各シリーズで差し替える7色）
+         * ─────────────────────────────────────────────────────
+         * 青の手帖（夜明けの湖山）:
+         *   #04060e #080f1c #0d1a38 #0c2040 #0a2238 #081d2a #061418 #04100e #030c08 #020806
+         * 銀の手帖（月夜の雪嶺）:
+         *   #060810 #0c1020 #141830 #181e3a #141830 #101520 #0c1018 #080c12 #06080e #04060a
+         * 金の手帖（黄金の山脈 — 夕暮れ）:
+         *   #040408 #0c0a1e #18102e #28102a #3e1a08 #6a3208 #482008 #1a0e04 #0e0802 #080602
+         * ─────────────────────────────────────────────────────
          */
         body {
             font-family: 'Noto Serif JP', serif;
             background: linear-gradient(180deg,
-                #060400 0%,
-                #100900 8%,
-                #1c1004 18%,
-                #221408 28%,
-                #1e1006 38%,
-                #180e06 50%,
-                #120a04 60%,
-                #0a0802 72%,
-                #080602 84%,
-                #050401 100%);
+                #040408  0%,
+                #0c0a1e 10%,
+                #18102e 22%,
+                #28102a 36%,
+                #3e1a08 50%,
+                #6a3208 62%,
+                #482008 72%,
+                #1a0e04 83%,
+                #0e0802 92%,
+                #080602 100%);
             background-attachment: fixed;
             margin: 0;
-            padding: 20px 20px 240px;
+            padding: 20px 20px 400px;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
         }
 
-        /* ===== MOON (金の手帖: 深琥珀の月) ===== */
+        /* ===== SUN GLOW / 地平線の太陽 ===== */
         /*
-         * 青の手帖: center #f0f8ff → #c8dff8, box-shadow blue rgba(100,160,255,...)
-         * 銀の手帖: center #f8fafc → #d8e8f4, box-shadow silver rgba(180,210,240,...)
-         * 金の手帖: center #fff0c0 → #d4820a (deep amber), box-shadow warm gold
+         * シリーズ別差し替えガイド:
+         *   青の手帖: 位置 bottom:310px, 色 rgba(120,190,255,...) 夜明けの青白い太陽
+         *   銀の手帖: 位置 bottom:330px, 色 rgba(220,235,255,...) 月光（大きな銀月）
+         *   金の手帖: 位置 bottom:295px, 色 rgba(255,180,40,...) 夕暮れの黄金太陽
          */
         .moon-glow {
             position: fixed;
-            top: -45px; right: 9%;
-            width: 190px; height: 190px;
+            bottom: 295px; left: 50%;
+            transform: translateX(-50%);
+            width: 520px; height: 260px;
             border-radius: 50%;
-            background: radial-gradient(circle at 40% 38%,
-                #fff4d0 0%, #ffd880 14%,
-                #d4820a 28%, rgba(180,100,10,0.5) 44%,
-                rgba(140,70,8,0.22) 60%,
-                rgba(100,50,5,0.06) 75%,
-                transparent 85%);
-            box-shadow:
-                0 0 60px rgba(240,160,30,0.35),
-                0 0 130px rgba(200,120,20,0.18),
-                0 0 260px rgba(160,90,10,0.09);
+            background: radial-gradient(ellipse at 50% 85%,
+                rgba(255,240,140,0.72) 0%,
+                rgba(255,190,50,0.45) 15%,
+                rgba(220,130,25,0.22) 38%,
+                rgba(170,80,10,0.09) 62%,
+                transparent 80%);
             pointer-events: none; z-index: 0;
         }
-        /* 月暈（琥珀色のリング） */
+        /* 太陽のコロナ（広がる黄金の光） */
         .moon-glow::after {
             content: '';
-            position: absolute; inset: -30%;
+            position: absolute;
+            bottom: -40px; left: -30%; right: -30%;
+            height: 120%;
             border-radius: 50%;
-            background: radial-gradient(circle,
-                transparent 46%,
-                rgba(220,150,30,0.09) 54%,
-                rgba(200,130,20,0.04) 62%,
+            background: radial-gradient(ellipse at 50% 100%,
+                rgba(220,140,20,0.12) 0%,
+                rgba(180,100,10,0.06) 40%,
                 transparent 70%);
+            filter: blur(15px);
         }
 
-        /* ===== AURORA MIST (金の手帖: 琥珀・深紅の霧) ===== */
+        /* ===== HORIZON ATMOSPHERE / 地平線の大気散乱 ===== */
         /*
-         * 青の手帖: rgba(18,80,180,...) teal-blue, rgba(40,22,140,...) indigo
-         * 銀の手帖: rgba(100,130,160,...) steel-blue, rgba(80,80,120,...) slate
-         * 金の手帖: rgba(160,80,10,...) amber, rgba(100,40,10,...) copper, rgba(180,120,20,...) gold
+         * 青の手帖: rgba(20,100,200,...) 朝の青い光, rgba(10,60,160,...) 紺碧
+         * 銀の手帖: rgba(140,165,200,...) 月光散乱, rgba(80,100,140,...) 霞
+         * 金の手帖: rgba(210,120,20,...) 夕焼け, rgba(160,70,10,...) 残照, rgba(240,170,30,...) 光芒
          */
         .aurora-mist {
             position: fixed;
-            top: 10%; left: 0; right: 0;
-            height: 40%;
+            bottom: 220px; left: 0; right: 0;
+            height: 360px;
             pointer-events: none; z-index: 0;
             background:
-                radial-gradient(ellipse 72% 45% at 20% 35%,
-                    rgba(160,80,10,0.13) 0%, transparent 70%),
-                radial-gradient(ellipse 50% 38% at 78% 25%,
-                    rgba(100,40,8,0.11) 0%, transparent 65%),
-                radial-gradient(ellipse 45% 30% at 52% 65%,
-                    rgba(180,120,18,0.09) 0%, transparent 70%),
-                radial-gradient(ellipse 35% 20% at 35% 80%,
-                    rgba(120,55,5,0.07) 0%, transparent 70%);
-            filter: blur(22px);
+                radial-gradient(ellipse 130% 55% at 50% 100%,
+                    rgba(210,120,20,0.22) 0%, transparent 65%),
+                radial-gradient(ellipse 90% 40% at 28% 85%,
+                    rgba(160,70,10,0.14) 0%, transparent 60%),
+                radial-gradient(ellipse 80% 35% at 74% 80%,
+                    rgba(180,90,12,0.12) 0%, transparent 62%),
+                radial-gradient(ellipse 60% 28% at 50% 55%,
+                    rgba(240,170,30,0.08) 0%, transparent 70%);
+            filter: blur(32px);
         }
 
         /* ===== STARS ===== */
@@ -133,11 +138,17 @@
             50% { opacity: 0.4; r: 1.2; }
         }
 
-        /* ===== FOREST SILHOUETTE ===== */
+        /* ===== MOUNTAIN SCENE / 山岳シルエット ===== */
+        /*
+         * height差し替えガイド:
+         *   青の手帖: 380px（湖面のため少し低め）
+         *   銀の手帖: 400px（雪嶺を高く）
+         *   金の手帖: 380px（黄金山脈）
+         */
         .forest-silhouette {
             position: fixed;
             bottom: 0; left: 0; right: 0;
-            height: 210px;
+            height: 380px;
             pointer-events: none; z-index: 1;
             overflow: hidden;
         }
@@ -147,22 +158,23 @@
             width: 100%; height: 100%;
         }
 
-        /* ===== MIST AT FOREST BASE (金の手帖: 金霧) ===== */
+        /* ===== VALLEY MIST / 山間の霧 ===== */
         /*
-         * 青の手帖: rgba(100,180,220,...) cool blue mist
-         * 銀の手帖: rgba(160,185,210,...) silver mist
-         * 金の手帖: rgba(200,140,30,...) amber gold mist
+         * 青の手帖: rgba(80,140,200,...) 夜明けの青い霧, height:120px, bottom:200px
+         * 銀の手帖: rgba(160,175,200,...) 月光の銀霧, height:100px, bottom:210px
+         * 金の手帖: rgba(200,110,15,...) 黄昏の琥珀霧, height:130px, bottom:160px
          */
         .forest-mist {
             position: fixed;
-            bottom: 80px; left: 0; right: 0;
-            height: 80px;
+            bottom: 160px; left: 0; right: 0;
+            height: 130px;
             pointer-events: none; z-index: 2;
             background: linear-gradient(to top,
-                rgba(200,120,20,0.09) 0%,
-                rgba(180,100,15,0.05) 50%,
+                rgba(200,110,15,0.12) 0%,
+                rgba(180,90,10,0.07) 40%,
+                rgba(160,80,8,0.03) 75%,
                 transparent 100%);
-            filter: blur(10px);
+            filter: blur(14px);
         }
 
         /* ===== MAGICAL SPARKS (金・青・紫の魔法粒子) ===== */
@@ -983,37 +995,58 @@
 <div class="forest-mist" aria-hidden="true"></div>
 <!-- Forest silhouette -->
 <div class="forest-silhouette" aria-hidden="true">
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 200" preserveAspectRatio="xMidYMax slice">
-    <!-- Back layer: distant forest (金の手帖: deep amber-brown / 青: #071a0c / 銀: #0a0e14) -->
-    <path fill="#1a0c04" opacity="0.6"
-      d="M0,200 L0,140 L35,105 L70,128 L108,92 L145,112
-         L180,80 L215,100 L252,68 L288,90 L325,62 L362,82
-         L400,55 L438,78 L475,62 L512,80 L548,52 L585,72
-         L622,58 L660,78 L698,88 L735,65 L772,80 L810,58
-         L848,72 L885,62 L922,78 L960,65 L1000,72 L1000,200 Z"/>
-    <!-- Front layer: near forest (金の手帖: near-black amber / 青: #030a05 / 銀: #060810) -->
-    <path fill="#0a0602" opacity="1"
-      d="M0,200 L0,78
-         L25,22 L50,75
-         Q72,45 95,75
-         L112,55 L130,8 L150,55
-         L170,42 L188,4 L210,45
-         Q234,14 258,45
-         L278,25 L298,0 L318,28
-         L338,48 L358,18 L378,48
-         Q402,20 426,48
-         L445,32 L465,2 L488,35
-         L510,50 L528,12 L548,2 L568,18
-         L590,35
-         Q612,8 636,38
-         L655,25 L675,0 L695,28
-         L715,45 L735,22 L755,55
-         Q778,28 802,52
-         L820,35 L840,8 L862,38
-         L882,52 L900,28 L920,55
-         Q942,25 965,52
-         L985,35 L1000,45
-         L1000,200 Z"/>
+  <!--
+    山岳シルエット 4層構造（viewBox 0 0 1000 380）
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    各シリーズの色差し替えガイド:
+      Layer4(最遠/霞): 金 rgba(210,140,55,0.18) | 青 rgba(60,110,180,0.18) | 銀 rgba(140,155,175,0.18)
+      Layer3(遠景):    金 rgba(120,65,18,0.44)   | 青 rgba(30,70,140,0.44)  | 銀 rgba(80,100,130,0.44)
+      Layer2(中景):    金 rgba(38,18,5,0.82)      | 青 rgba(12,38,80,0.82)   | 銀 rgba(28,45,70,0.82)
+      Layer1(近景):    金 #050300                 | 青 #020508               | 銀 #040608
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  -->
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 380" preserveAspectRatio="xMidYMax slice">
+
+    <!-- Layer 4: 最遠景の幽霊山脈（霞んで薄く見える最高峰群） -->
+    <path fill="rgba(210,140,55,0.18)"
+      d="M0,380 L0,95
+         L28,82 L55,90 L82,68 L106,55 L122,65 L140,42 L158,56 L174,38
+         L192,22 L210,40 L228,26 L248,12 L265,24 L282,8 L300,20 L318,4
+         L336,16 L354,6 L372,22 L390,10 L408,24 L428,12 L448,28 L468,14
+         L488,30 L510,16 L532,32 L556,18 L578,32 L600,18 L622,34 L644,20
+         L668,8 L690,22 L712,10 L735,28 L758,16 L782,32 L805,16 L828,30
+         L852,12 L875,24 L898,8 L922,22 L946,12 L970,28 L1000,18
+         L1000,380 Z"/>
+
+    <!-- Layer 3: 遠景の連山（地平線に連なる山並み） -->
+    <path fill="rgba(120,65,18,0.44)"
+      d="M0,380 L0,158
+         L38,140 L75,154 L112,124 L145,110 L172,125 L200,100 L228,114
+         L255,100 L280,118 L308,96 L335,110 L362,92 L390,108 L418,90
+         L445,108 L472,90 L500,104 L528,90 L555,108 L582,120 L610,100
+         L638,114 L665,96 L692,112 L720,94 L748,110 L775,94 L803,110
+         L830,94 L858,110 L885,92 L912,110 L940,94 L968,110 L1000,96
+         L1000,380 Z"/>
+
+    <!-- Layer 2: 中景の山脈（夕陽を遮るシルエット） -->
+    <path fill="rgba(38,18,5,0.82)"
+      d="M0,380 L0,242
+         L40,220 L78,236 L115,212 L148,200 L175,215 L205,194 L235,210
+         L265,194 L292,212 L322,190 L352,208 L382,190 L412,208 L442,190
+         L472,208 L502,190 L532,208 L562,190 L592,208 L622,192 L652,210
+         L682,192 L712,210 L742,192 L772,210 L802,190 L832,208 L862,190
+         L892,208 L922,190 L952,208 L1000,194
+         L1000,380 Z"/>
+
+    <!-- Layer 1: 近景の稜線（最暗、最低、手前の山） -->
+    <path fill="#050300"
+      d="M0,380 L0,298
+         L45,278 L88,292 L128,270 L162,258 L188,274 L222,256 L258,272
+         L292,256 L325,272 L360,252 L395,270 L430,252 L466,270 L502,252
+         L538,270 L574,252 L610,270 L648,252 L684,270 L720,252 L758,270
+         L795,252 L832,270 L870,252 L908,270 L946,252 L1000,260
+         L1000,380 Z"/>
+
   </svg>
 </div>
 
